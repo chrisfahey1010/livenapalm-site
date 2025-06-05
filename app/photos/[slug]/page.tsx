@@ -15,7 +15,7 @@ export default async function PhotoPage({ params }: Props) {
       title={metadata.title}
       date={metadata.date}
       location={metadata.location}
-      imageSrc={metadata.imageSrc}
+      images={metadata.images}
       altText={metadata.altText}
       description={
         <div

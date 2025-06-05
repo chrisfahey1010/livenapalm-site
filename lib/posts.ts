@@ -20,9 +20,27 @@ export async function getPost(slug: string) {
       title: data.title,
       date: data.date,
       location: data.location,
-      imageSrc: data.image,
-      altText: data.alt,
+      images: data.images || [],
+      altText: data.alt || '',
     },
     contentHtml,
   };
+}
+
+export function getAllPostsMetadata() {
+  const filenames = fs.readdirSync(postsDirectory);
+
+  return filenames.map((filename) => {
+    const slug = filename.replace(/\.md$/, '');
+    const filePath = path.join(postsDirectory, filename);
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const { data } = matter(fileContents);
+
+    return {
+      slug,
+      title: data.title,
+      imageSrc: Array.isArray(data.images) ? data.images[0] : data.imageSrc,
+      altText: data.altText || '',
+    };
+  });
 }

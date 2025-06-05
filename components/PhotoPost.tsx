@@ -4,7 +4,7 @@ type PhotoPostProps = {
   title: string;
   date: string;
   location: string;
-  imageSrc: string;
+  images: string[];
   altText: string;
   description: React.ReactNode;
 };
@@ -13,7 +13,7 @@ export default function PhotoPost({
   title,
   date,
   location,
-  imageSrc,
+  images,
   altText,
   description,
 }: PhotoPostProps) {
@@ -24,11 +24,16 @@ export default function PhotoPost({
         <p className="text-gray-400 mb-2">
           📅 {date} · 📍 {location}
         </p>
-        <img
-          src={imageSrc}
-          alt={altText}
-          className="w-full h-auto my-6 rounded-lg shadow-lg"
-        />
+        <div className="space-y-6 my-6">
+          {images.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt={`${altText} ${i + 1}`}
+              className="w-full h-auto rounded-lg shadow-lg"
+            />
+          ))}
+        </div>
         <div className="text-lg text-gray-300 leading-relaxed mt-6">
           {description}
         </div>
