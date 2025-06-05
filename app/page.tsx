@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-black text-white px-6 py-12">
@@ -10,18 +12,18 @@ export default function HomePage() {
         <p className="text-xl text-gray-300 mb-8">
           Gonzo concert photography in the Pacific Northwest by Chris Fahey
         </p>
-        <a
+        <Link
           href="/about"
           className="inline-block mt-4 px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition"
         >
           Learn More
-        </a>
-        <a
+        </Link>
+        <Link
           href="/photos/2025-05-09_SpectralWound"
           className="inline-block mt-4 px-6 py-3 border border-white text-white rounded-lg hover:bg-white hover:text-black transition"
         >
           View a Sample Post
-        </a>
+        </Link>
       </div>
     </main>
   );
