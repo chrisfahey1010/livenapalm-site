@@ -21,8 +21,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               />
             </Link>
             <div className="space-x-6">
-              <Link href="/gallery" className="hover:text-gray-300">Gallery</Link>
-              <Link href="/about" className="hover:text-gray-300">About</Link>
+              <Link href="/gallery" className="text-white hover:text-gray-300">
+                Gallery
+              </Link>
+              <Link href="/about" className="text-white hover:text-gray-300">
+                About
+              </Link>
             </div>
           </nav>
         </header>
