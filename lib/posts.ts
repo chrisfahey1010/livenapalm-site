@@ -27,7 +27,7 @@ export async function getPost(slug: string) {
   };
 }
 
-export function getAllPostsMetadata() {
+export async function getAllPostsMetadata() {
   const filenames = fs.readdirSync(postsDirectory);
 
   return filenames.map((filename) => {
@@ -40,8 +40,10 @@ export function getAllPostsMetadata() {
       slug,
       title: data.title,
       date: data.date,
-      imageSrc: Array.isArray(data.images) ? data.images[0] : data.imageSrc,
-      altText: data.altText || '',
+      imageSrc: Array.isArray(data.images) && data.images.length > 0
+        ? data.images[0]
+        : '/logo.png',
+      altText: data.alt || '',
     };
   });
 }

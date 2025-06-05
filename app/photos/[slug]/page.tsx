@@ -2,7 +2,7 @@ import { getPost, getAllPostsMetadata } from '@/lib/posts';
 import PhotoPost from '@/components/PhotoPost';
 
 export async function generateStaticParams() {
-  const posts = getAllPostsMetadata();
+  const posts = await getAllPostsMetadata();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
