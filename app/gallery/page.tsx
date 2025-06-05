@@ -8,7 +8,7 @@ export default async function GalleryPage() {
   return (
     <main className="min-h-screen bg-black text-white px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold mb-10">Gallery</h1>
+        <h1 className="text-3xl font-bold mb-10">Gallery</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {posts.map((post) => (
             <Link key={post.slug} href={`/photos/${post.slug}`}>
