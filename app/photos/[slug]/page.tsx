@@ -7,8 +7,9 @@ type Props = {
   };
 };
 
-export default async function PhotoPage({ params }: Props) {
-  const { metadata, contentHtml } = await getPost(params.slug);
+export default async function PhotoPage(props: Props) {
+  const { slug } = await props.params;
+  const { metadata, contentHtml } = await getPost(slug);
 
   return (
     <PhotoPost
