@@ -16,6 +16,12 @@ export default function HomePage() {
         >
           Learn More
         </a>
+        <a
+          href="/photos/first-show"
+          className="inline-block mt-4 px-6 py-3 border border-white text-white rounded-lg hover:bg-white hover:text-black transition"
+        >
+          View a Sample Post
+        </a>
       </div>
     </main>
   );
