@@ -39,6 +39,7 @@ export function getAllPostsMetadata() {
     return {
       slug,
       title: data.title,
+      date: data.date,
       imageSrc: Array.isArray(data.images) ? data.images[0] : data.imageSrc,
       altText: data.altText || '',
     };
