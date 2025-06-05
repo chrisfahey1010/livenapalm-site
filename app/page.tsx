@@ -13,8 +13,14 @@ export default function HomePage() {
           Gonzo concert photography in the Pacific Northwest by Chris Fahey
         </p>
         <Link
-          href="/about"
+          href="/gallery"
           className="inline-block mt-4 px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition"
+        >
+          View Gallery
+        </Link>
+        <Link
+          href="/about"
+          className="inline-block mt-4 px-6 py-3 border border-white text-white rounded-lg hover:bg-white hover:text-black transition"
         >
           Learn More
         </Link>
