@@ -1,5 +1,4 @@
-import { getPost } from '@/lib/posts';
-import { getAllPostsMetadata } from '@/lib/posts';
+import { getPost, getAllPostsMetadata } from '@/lib/posts';
 import PhotoPost from '@/components/PhotoPost';
 
 export async function generateStaticParams() {
@@ -10,9 +9,10 @@ export async function generateStaticParams() {
 export default async function PhotoPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { metadata, contentHtml } = await getPost(params.slug);
+  const { slug } = await params;
+  const { metadata, contentHtml } = await getPost(slug);
 
   return (
     <PhotoPost
