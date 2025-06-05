@@ -8,10 +8,10 @@ export default function AboutPage() {
           <strong> LiveNapalm</strong>.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
-          After a company layoff, I turned to my passion for music and photography, documenting the raw energy of the Pacific Northwest’s metal scene. LiveNapalm is more than a photo archive — it’s a personal project that merges my love for live music with my software skills.
+          I have been photographing concerts since 2023, and editing the RAW photos using Darktable to create distinct and realistic captures of energy in the moment. I shoot using a Canon R6 mark II and a Canon M50, paired with wide-aperture prime lenses.
         </p>
         <p className="text-lg leading-relaxed">
-          This site is built from the ground up using modern web tech to showcase high-resolution photography in a way that’s searchable, filterable, and fast. I’m building it in public to demonstrate my skills and continue growing as an engineer.
+          This site is built from the ground up using modern web technology to showcase high-resolution photography in a way that’s searchable, filterable, and fast. I’m building it in public to demonstrate my skills and continue growing as an engineer.
         </p>
       </div>
     </main>
