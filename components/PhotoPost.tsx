@@ -1,10 +1,12 @@
+import React from "react"
+
 type PhotoPostProps = {
   title: string;
   date: string;
   location: string;
   imageSrc: string;
   altText: string;
-  description: string;
+  description: React.ReactNode;
 };
 
 export default function PhotoPost({
@@ -27,7 +29,9 @@ export default function PhotoPost({
           alt={altText}
           className="w-full h-auto my-6 rounded-lg shadow-lg"
         />
-        <p className="text-lg text-gray-300 leading-relaxed">{description}</p>
+        <div className="text-lg text-gray-300 leading-relaxed mt-6">
+          {description}
+        </div>
       </div>
     </main>
   );
