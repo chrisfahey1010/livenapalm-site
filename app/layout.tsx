@@ -13,7 +13,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-black text-white font-sans">
         <header className="bg-black border-b border-gray-800 p-4">
           <nav className="max-w-4xl mx-auto flex justify-between">
-            <Link href="/" className="text-xl font-bold tracking-wide hover:text-gray-300">LiveNapalm</Link>
+            <Link href="/" className="flex items-center">
+              <img
+                src="/logo_text.png"
+                alt="LiveNapalm"
+                className="h-8 w-auto object-contain hover:opacity-80 transition" 
+              />
+            </Link>
             <div className="space-x-6">
               <Link href="/" className="hover:text-gray-300">Home</Link>
               <Link href="/about" className="hover:text-gray-300">About</Link>
