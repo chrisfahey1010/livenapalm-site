@@ -13,6 +13,11 @@ export default function AboutPage() {
         <p className="text-lg leading-relaxed">
           This site is built from the ground up using modern web technology to showcase high-resolution photography in a way that’s searchable, filterable, and fast. I’m building it in public to demonstrate my skills and continue growing as an engineer.
         </p>
+        <img
+          src="/me.jpg"
+          alt="Chris Fahey in corpsepaint"
+          className="mx-auto h-auto w-100 mb-6 rounded-lg shadow-lg" 
+        />
       </div>
     </main>
   );
