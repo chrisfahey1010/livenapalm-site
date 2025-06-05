@@ -5,7 +5,7 @@ export default function HomePage() {
         <img
           src="/logo.png"
           alt="LiveNapalm Logo"
-          className="mx-auto h-32 w-auto mb-6" 
+          className="mx-auto h-24 w-auto mb-6" 
         />
         <p className="text-xl text-gray-300 mb-8">
           Gonzo concert photography in the Pacific Northwest by Chris Fahey
