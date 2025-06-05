@@ -1,16 +1,18 @@
 import { getPost } from '@/lib/posts';
 import { getAllPostsMetadata } from '@/lib/posts';
 import PhotoPost from '@/components/PhotoPost';
-import type { PageProps } from 'next';
 
 export async function generateStaticParams() {
   const posts = getAllPostsMetadata();
   return posts.map((post) => ({ slug: post.slug }));
 }
 
-export default async function PhotoPage({ params }: PageProps) {
-  const { slug } = params;
-  const { metadata, contentHtml } = await getPost(slug);
+export default async function PhotoPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { metadata, contentHtml } = await getPost(params.slug);
 
   return (
     <PhotoPost
