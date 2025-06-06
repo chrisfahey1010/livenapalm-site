@@ -36,13 +36,18 @@ export async function getAllPostsMetadata() {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const { data } = matter(fileContents);
 
+    const thumbnailPath = `/photos/${slug}/thumbnail.jpg`;
+    const publicThumbnailPath = path.join(process.cwd(), 'public', thumbnailPath);
+
+    const fallbackImage = Array.isArray(data.images) && data.images.length > 0
+      ? data.images[0]
+      : '/logo.png';
+
     return {
       slug,
       title: data.title,
       date: data.date,
-      imageSrc: Array.isArray(data.images) && data.images.length > 0
-        ? data.images[0]
-        : '/logo.png',
+      imageSrc: fs.existsSync(publicThumbnailPath) ? thumbnailPath : fallbackImage,
       altText: data.alt || '',
     };
   });
