@@ -18,9 +18,9 @@ export default function PhotoPost({
   description,
 }: PhotoPostProps) {
   return (
-    <main className="min-h-screen bg-black text-white px-4 py-12">
+    <main className="min-h-screen bg-black text-white px-4 py-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">{title}</h1>
+        <h1 className="text-3xl font-bold mb-4">{title}</h1>
         <p className="text-gray-400 mb-2">
           📅 {date} · 📍 {location}
         </p>
