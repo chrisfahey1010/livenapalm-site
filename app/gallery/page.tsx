@@ -6,7 +6,7 @@ export default async function GalleryPage() {
   const posts = await getAllPostsMetadata();
 
   return (
-    <main className="min-h-screen bg-black text-white px-4 py-6">
+    <main className="min-h-screen bg-black text-white px-4 py-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-5">Gallery</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
