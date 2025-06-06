@@ -4,7 +4,7 @@ export default function AboutPage() {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">About LiveNapalm</h1>
         <p className="mb-4 text-lg leading-relaxed">
-          I am Chris Fahey — a software engineer with 5+ years of industry experience, and the photographer behind
+          I am Chris Fahey — a software engineer and the photographer behind
           <strong> LiveNapalm</strong>.
         </p>
         <p className="mb-4 text-lg leading-relaxed">
