@@ -30,7 +30,7 @@ export default function PhotoPost({
               key={i}
               src={src}
               alt={`${altText} ${i + 1}`}
-              className="w-full h-auto rounded-lg shadow-lg"
+              className="w-full h-auto rounded-sm shadow-lg"
             />
           ))}
         </div>

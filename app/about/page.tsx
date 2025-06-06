@@ -16,7 +16,7 @@ export default function AboutPage() {
         <img
           src="/me.jpg"
           alt="Chris Fahey in corpsepaint"
-          className="mx-auto h-auto w-100 mb-6 rounded-lg shadow-lg" 
+          className="mx-auto h-auto w-100 mb-6 rounded-sm shadow-lg" 
         />
       </div>
     </main>

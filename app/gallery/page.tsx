@@ -13,7 +13,7 @@ export default async function GalleryPage() {
           {posts.map((post) => (
             <Link key={post.slug} href={`/photos/${post.slug}`}>
               <div className="group">
-                <div className="relative overflow-hidden rounded-lg shadow-lg w-full" style={{ paddingTop: '125%' }}>
+                <div className="relative overflow-hidden shadow-lg w-full" style={{ paddingTop: '125%' }}>
                   {/* paddingTop: "125%" creates a 4:5 aspect box */}
                   <Image
                     src={post.imageSrc}
