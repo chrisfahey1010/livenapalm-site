@@ -88,8 +88,8 @@ export default function PhotoPost({
   return (
     <main className="min-h-screen bg-black text-white px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">{title}</h1>
-        <p className="text-gray-400 mb-8">
+        <h1 className="text-xl font-bold mb-4">{title}</h1>
+        <p className="text-gray-400 text-sm mb-8">
           📅 {date} · 📍 {location}
         </p>
 
