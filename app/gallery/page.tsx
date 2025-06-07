@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { getAllPostsMetadata } from '@/lib/posts';
 
 export default async function GalleryPage() {
-  const posts = await getAllPostsMetadata();
+  const posts = (await getAllPostsMetadata()).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
