@@ -3,7 +3,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
-import { S3Client, ListObjectsV2Command, _Object } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, _Object, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 const bucketURL = 'https://livenapalm-photos.s3.us-west-2.amazonaws.com';
@@ -119,4 +120,13 @@ export async function getAllPostsMetadata() {
       altText: data.alt || '',
     };
   });
+}
+
+export async function getPresignedDownloadUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    ResponseContentDisposition: 'attachment',
+  });
+  return getSignedUrl(s3Client, command, { expiresIn: 60 }); // 1 minute expiry
 }

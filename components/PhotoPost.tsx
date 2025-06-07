@@ -34,6 +34,8 @@ export default function PhotoPost({
   const [modalLoaded, setModalLoaded] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   // Handle image load for grid
   const handleImageLoad = (idx: number) => {
@@ -85,6 +87,24 @@ export default function PhotoPost({
     touchEndX.current = null;
   };
 
+  // Fetch presigned download URL when modal is open and selectedIndex changes
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      setDownloadUrl(null);
+      setDownloading(true);
+      // Get the S3 key from the image URL
+      const url = images[selectedIndex];
+      const key = url.split(".com/")[1];
+      fetch(`/api/presigned-download?key=${encodeURIComponent(key)}`)
+        .then(res => res.json())
+        .then(data => {
+          setDownloadUrl(data.url);
+          setDownloading(false);
+        })
+        .catch(() => setDownloading(false));
+    }
+  }, [selectedIndex, images]);
+
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
       <div className="max-w-7xl mx-auto">
@@ -126,28 +146,6 @@ export default function PhotoPost({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Left Arrow */}
-            {selectedIndex > 0 && (
-              <button
-                className="absolute left-4 bottom-4 top-auto -translate-y-0 md:left-8 md:top-1/2 md:bottom-auto md:-translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-4 z-50 flex items-center justify-center"
-                style={{ fontSize: 32 }}
-                onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }}
-                aria-label="Previous photo"
-              >
-                &#8592;
-              </button>
-            )}
-            {/* Right Arrow */}
-            {selectedIndex < images.length - 1 && (
-              <button
-                className="absolute right-4 bottom-4 top-auto -translate-y-0 md:right-8 md:top-1/2 md:bottom-auto md:-translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-4 z-50 flex items-center justify-center"
-                style={{ fontSize: 32 }}
-                onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }}
-                aria-label="Next photo"
-              >
-                &#8594;
-              </button>
-            )}
             <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
               {!modalLoaded && <Spinner />}
               <Image
@@ -165,6 +163,41 @@ export default function PhotoPost({
               >
                 ✕
               </button>
+            </div>
+            {/* Bottom Navbar for navigation and download */}
+            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-4 py-3 z-50 gap-2">
+              {/* Left Arrow */}
+              {selectedIndex > 0 ? (
+                <button
+                  className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  style={{ fontSize: 32 }}
+                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }}
+                  aria-label="Previous photo"
+                >
+                  ⬅️
+                </button>
+              ) : <div className="w-16" />} {/* Spacer for alignment */}
+              {/* Download Button */}
+              <a
+                href={downloadUrl || undefined}
+                download
+                className={`inline-flex items-center px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                aria-label="Download photo"
+                onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
+              >
+                {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "⏬ Download"}
+              </a>
+              {/* Right Arrow */}
+              {selectedIndex < images.length - 1 ? (
+                <button
+                  className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  style={{ fontSize: 32 }}
+                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }}
+                  aria-label="Next photo"
+                >
+                  ➡️
+                </button>
+              ) : <div className="w-16" />} {/* Spacer for alignment */}
             </div>
           </div>
         )}
