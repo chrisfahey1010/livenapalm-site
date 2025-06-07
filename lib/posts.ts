@@ -20,6 +20,15 @@ const s3Client = new S3Client({
 
 async function getImagesFromS3(folder: string, slug: string): Promise<string[]> {
   try {
+    // Log the attempt to fetch images
+    console.log(`Attempting to fetch images for ${folder}/${slug}_`);
+
+    // Check if credentials are available
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+      console.error('AWS credentials are not configured');
+      return [];
+    }
+
     const command = new ListObjectsV2Command({
       Bucket: bucketName,
       Prefix: `${folder}/${slug}_`,
@@ -28,11 +37,15 @@ async function getImagesFromS3(folder: string, slug: string): Promise<string[]> 
     const response = await s3Client.send(command);
     
     if (!response.Contents) {
+      console.log(`No images found for ${folder}/${slug}_`);
       return [];
     }
 
+    // Log the number of images found
+    console.log(`Found ${response.Contents.length} images for ${folder}/${slug}_`);
+
     // Sort the images by their number to maintain order
-    return response.Contents
+    const images = response.Contents
       .map((obj: _Object) => obj.Key)
       .filter((key: string | undefined): key is string => key !== undefined)
       .sort((a: string, b: string) => {
@@ -41,8 +54,19 @@ async function getImagesFromS3(folder: string, slug: string): Promise<string[]> 
         return numA - numB;
       })
       .map((key: string) => `${bucketURL}/${key}`);
+
+    // Log the final image URLs
+    console.log('Image URLs:', images);
+
+    return images;
   } catch (error) {
     console.error('Error fetching images from S3:', error);
+    // Log more detailed error information
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return [];
   }
 }
