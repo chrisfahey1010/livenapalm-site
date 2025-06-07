@@ -30,7 +30,7 @@ export default function PhotoPost({
           📅 {date} · 📍 {location}
         </p>
 
-        {/* Redesigned Photo Grid */}
+        {/* Photo Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
           {images.map((src, i) => (
             <div
