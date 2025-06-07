@@ -5,6 +5,7 @@ import { remark } from 'remark';
 import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
+const bucketURL = 'https://livenapalm-photos.s3.us-west-2.amazonaws.com';
 
 export async function getPost(slug: string) {
   const fullPath = path.join(postsDirectory, `${slug}.md`);
@@ -14,13 +15,18 @@ export async function getPost(slug: string) {
   const processedContent = await remark().use(html).process(content);
   const contentHtml = processedContent.toString();
 
+  // Normalize image paths
+  const images: string[] = (data.images || []).map((imgPath: string) =>
+    imgPath.startsWith('http') ? imgPath : `${bucketURL}/${imgPath}`
+  );
+
   return {
     slug,
     metadata: {
       title: data.title,
       date: data.date,
       location: data.location,
-      images: data.images || [],
+      images,
       altText: data.alt || '',
     },
     contentHtml,
@@ -36,18 +42,17 @@ export async function getAllPostsMetadata() {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const { data } = matter(fileContents);
 
-    const thumbnailPath = `/photos/${slug}/thumbnail.jpg`;
-    const publicThumbnailPath = path.join(process.cwd(), 'public', thumbnailPath);
+    const thumbnailPath = `${bucketURL}/${slug}/thumbnail.jpg`;
 
-    const fallbackImage = Array.isArray(data.images) && data.images.length > 0
-      ? data.images[0]
-      : '/logo.png';
+    // const fallbackImage = Array.isArray(data.images) && data.images.length > 0
+    //   ? `${bucketURL}/${data.images[0]}`
+    //   : '/logo.png';
 
     return {
       slug,
       title: data.title,
       date: data.date,
-      imageSrc: fs.existsSync(publicThumbnailPath) ? thumbnailPath : fallbackImage,
+      imageSrc: thumbnailPath,
       altText: data.alt || '',
     };
   });
