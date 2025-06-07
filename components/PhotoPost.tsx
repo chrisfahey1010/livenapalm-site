@@ -129,7 +129,7 @@ export default function PhotoPost({
             {/* Left Arrow */}
             {selectedIndex > 0 && (
               <button
-                className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-3 md:p-4 z-50 flex items-center justify-center"
+                className="absolute left-4 bottom-4 top-auto -translate-y-0 md:left-8 md:top-1/2 md:bottom-auto md:-translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-4 z-50 flex items-center justify-center"
                 style={{ fontSize: 32 }}
                 onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }}
                 aria-label="Previous photo"
@@ -140,7 +140,7 @@ export default function PhotoPost({
             {/* Right Arrow */}
             {selectedIndex < images.length - 1 && (
               <button
-                className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-3 md:p-4 z-50 flex items-center justify-center"
+                className="absolute right-4 bottom-4 top-auto -translate-y-0 md:right-8 md:top-1/2 md:bottom-auto md:-translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-4 z-50 flex items-center justify-center"
                 style={{ fontSize: 32 }}
                 onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }}
                 aria-label="Next photo"
