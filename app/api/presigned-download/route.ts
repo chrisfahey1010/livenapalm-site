@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
     const url = await getPresignedDownloadUrl(key);
     return new Response(JSON.stringify({ url }), { status: 200 });
   } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: 'Failed to generate presigned URL' }), { status: 500 });
   }
 } 
