@@ -44,10 +44,6 @@ export async function getAllPostsMetadata() {
 
     const thumbnailPath = `${bucketURL}/${slug}/thumbnail.jpg`;
 
-    // const fallbackImage = Array.isArray(data.images) && data.images.length > 0
-    //   ? `${bucketURL}/${data.images[0]}`
-    //   : '/logo.png';
-
     return {
       slug,
       title: data.title,
