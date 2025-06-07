@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
 type PhotoPostProps = {
@@ -29,9 +29,11 @@ export default function PhotoPost({
   altText,
   description,
 }: PhotoPostProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<boolean[]>(Array(images.length).fill(false));
   const [modalLoaded, setModalLoaded] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   // Handle image load for grid
   const handleImageLoad = (idx: number) => {
@@ -43,9 +45,45 @@ export default function PhotoPost({
   };
 
   // Reset modal loaded state when opening a new image
-  React.useEffect(() => {
+  useEffect(() => {
     setModalLoaded(false);
-  }, [selectedImage]);
+  }, [selectedIndex]);
+
+  // Keyboard navigation for modal
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setSelectedIndex((idx) => (idx !== null && idx > 0 ? idx - 1 : idx));
+      } else if (e.key === "ArrowRight") {
+        setSelectedIndex((idx) => (idx !== null && idx < images.length - 1 ? idx + 1 : idx));
+      } else if (e.key === "Escape") {
+        setSelectedIndex(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedIndex, images.length]);
+
+  // Touch/swipe navigation for modal
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null && selectedIndex !== null) {
+      const delta = touchEndX.current - touchStartX.current;
+      if (delta > 50 && selectedIndex > 0) {
+        setSelectedIndex(selectedIndex - 1);
+      } else if (delta < -50 && selectedIndex < images.length - 1) {
+        setSelectedIndex(selectedIndex + 1);
+      }
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   return (
     <main className="min-h-screen bg-black text-white px-4 py-8">
@@ -61,7 +99,7 @@ export default function PhotoPost({
             <div
               key={i}
               className="w-full bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer group flex items-center justify-center relative"
-              onClick={() => setSelectedImage(src)}
+              onClick={() => setSelectedIndex(i)}
               style={{ minHeight: 200 }}
             >
               {!loaded[i] && <Spinner />}
@@ -80,15 +118,40 @@ export default function PhotoPost({
         </div>
 
         {/* Fullscreen Modal */}
-        {selectedImage && (
+        {selectedIndex !== null && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedIndex(null)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
+            {/* Left Arrow */}
+            {selectedIndex > 0 && (
+              <button
+                className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-3 md:p-4 z-50 flex items-center justify-center"
+                style={{ fontSize: 32 }}
+                onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }}
+                aria-label="Previous photo"
+              >
+                &#8592;
+              </button>
+            )}
+            {/* Right Arrow */}
+            {selectedIndex < images.length - 1 && (
+              <button
+                className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white rounded-full p-3 md:p-4 z-50 flex items-center justify-center"
+                style={{ fontSize: 32 }}
+                onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }}
+                aria-label="Next photo"
+              >
+                &#8594;
+              </button>
+            )}
             <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
               {!modalLoaded && <Spinner />}
               <Image
-                src={selectedImage}
+                src={images[selectedIndex]}
                 alt={altText}
                 fill
                 className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
@@ -97,7 +160,8 @@ export default function PhotoPost({
               />
               <button
                 className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
-                onClick={() => setSelectedImage(null)}
+                onClick={e => { e.stopPropagation(); setSelectedIndex(null); }}
+                aria-label="Close modal"
               >
                 ✕
               </button>
