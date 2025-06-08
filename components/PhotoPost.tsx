@@ -44,6 +44,9 @@ export default function PhotoPost({
   const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
 
+  // Detect iOS (iPhone/iPad/iPod)
+  const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   // Handle image load for grid
   const handleImageLoad = (idx: number) => {
     setLoaded((prev) => {
@@ -215,15 +218,17 @@ export default function PhotoPost({
                 {showExif ? "🖼️ View Photo" : "📄 View EXIF"}
               </button>
               {/* Download Button */}
-              <a
-                href={downloadUrl || undefined}
-                download
-                className={`inline-flex items-center px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
-                aria-label="Download photo"
-                onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
-              >
-                {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "⏬ Download"}
-              </a>
+              {!isIOS && (
+                <a
+                  href={downloadUrl || undefined}
+                  download
+                  className={`inline-flex items-center px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                  aria-label="Download photo"
+                  onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
+                >
+                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "⏬ Download"}
+                </a>
+              )}
               {/* Right Arrow */}
               {selectedIndex < images.length - 1 ? (
                 <button
