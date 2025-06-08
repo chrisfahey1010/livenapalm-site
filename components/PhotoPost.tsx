@@ -3,9 +3,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
+type ExifData = Record<string, string | number | boolean | null | undefined>;
 type PhotoPostImage = {
   src: string;
-  exif: any;
+  exif: ExifData | null;
 };
 
 type PhotoPostProps = {

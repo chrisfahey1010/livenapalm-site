@@ -21,12 +21,13 @@ const s3Client = new S3Client({
 
 // Load EXIF data from JSON file
 const exifDataPath = path.join(process.cwd(), 'photo-exif.json');
-let exifData: Record<string, any> = {};
+type ExifData = Record<string, string | number | boolean | null | undefined>;
+let exifData: Record<string, ExifData> = {};
 if (fs.existsSync(exifDataPath)) {
   exifData = JSON.parse(fs.readFileSync(exifDataPath, 'utf8'));
 }
 
-async function getImagesFromS3(folder: string, slug: string): Promise<{ src: string, exif: any }[]> {
+async function getImagesFromS3(folder: string, slug: string): Promise<{ src: string, exif: ExifData | null }[]> {
   try {
     // Log the attempt to fetch images
     console.log(`Attempting to fetch images for ${folder}/${slug}_`);
