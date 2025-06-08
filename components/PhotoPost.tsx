@@ -148,7 +148,6 @@ export default function PhotoPost({
         {selectedIndex !== null && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-            onClick={() => { setSelectedIndex(null); setShowExif(false); }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
