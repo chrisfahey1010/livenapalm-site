@@ -41,6 +41,7 @@ export default function PhotoPost({
   const touchEndX = useRef<number | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showExif, setShowExif] = useState(false);
 
   // Handle image load for grid
   const handleImageLoad = (idx: number) => {
@@ -146,42 +147,70 @@ export default function PhotoPost({
         {selectedIndex !== null && (
           <div
             className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedIndex(null)}
+            onClick={() => { setSelectedIndex(null); setShowExif(false); }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
-              {!modalLoaded && <Spinner />}
-              <Image
-                src={images[selectedIndex].src}
-                alt={altText}
-                fill
-                className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
-                priority
-                onLoad={() => setModalLoaded(true)}
-              />
+            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center pb-40">
+              {!modalLoaded && !showExif && <Spinner />}
+              {showExif ? (
+                <div className="bg-black bg-opacity-80 text-white rounded-lg p-6 max-h-[70vh] w-full max-w-2xl overflow-y-auto shadow-lg border border-gray-700">
+                  <h2 className="text-lg font-bold mb-4">EXIF Data</h2>
+                  {images[selectedIndex].exif ? (
+                    <table className="w-full text-sm">
+                      <tbody>
+                        {Object.entries(images[selectedIndex].exif).map(([key, value]) => (
+                          <tr key={key} className="border-b border-gray-700 last:border-b-0">
+                            <td className="pr-4 py-1 text-gray-400 whitespace-nowrap align-top">{key}</td>
+                            <td className="py-1 break-all">{String(value)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div>No EXIF data available for this photo.</div>
+                  )}
+                </div>
+              ) : (
+                <Image
+                  src={images[selectedIndex].src}
+                  alt={altText}
+                  fill
+                  className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
+                  priority
+                  onLoad={() => setModalLoaded(true)}
+                />
+              )}
               <button
                 className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
-                onClick={e => { e.stopPropagation(); setSelectedIndex(null); }}
+                onClick={e => { e.stopPropagation(); setSelectedIndex(null); setShowExif(false); }}
                 aria-label="Close modal"
               >
                 ✕
               </button>
             </div>
-            {/* Bottom Navbar for navigation and download */}
+            {/* Bottom Navbar for navigation, exif, and download */}
             <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-4 py-3 z-50 gap-2">
               {/* Left Arrow */}
               {selectedIndex > 0 ? (
                 <button
                   className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
-                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }}
+                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); setShowExif(false); }}
                   aria-label="Previous photo"
                 >
                   ⬅️
                 </button>
               ) : <div className="w-16" />} {/* Spacer for alignment */}
+              {/* View EXIF Button */}
+              <button
+                className="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition mx-2"
+                aria-label={showExif ? "View Photo" : "View EXIF"}
+                onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
+              >
+                {showExif ? "🖼️ View Photo" : "📄 View EXIF"}
+              </button>
               {/* Download Button */}
               <a
                 href={downloadUrl || undefined}
@@ -197,7 +226,7 @@ export default function PhotoPost({
                 <button
                   className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
-                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }}
+                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); setShowExif(false); }}
                   aria-label="Next photo"
                 >
                   ➡️
