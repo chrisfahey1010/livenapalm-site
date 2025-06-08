@@ -3,11 +3,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
+type PhotoPostImage = {
+  src: string;
+  exif: any;
+};
+
 type PhotoPostProps = {
   title: string;
   date: string;
   location: string;
-  images: string[];
+  images: PhotoPostImage[];
   altText: string;
   description: React.ReactNode;
 };
@@ -93,7 +98,7 @@ export default function PhotoPost({
       setDownloadUrl(null);
       setDownloading(true);
       // Get the S3 key from the image URL
-      const url = images[selectedIndex];
+      const url = images[selectedIndex].src;
       const key = url.split(".com/")[1];
       fetch(`/api/presigned-download?key=${encodeURIComponent(key)}`)
         .then(res => res.json())
@@ -115,7 +120,7 @@ export default function PhotoPost({
 
         {/* Photo Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-          {images.map((src, i) => (
+          {images.map((img, i) => (
             <div
               key={i}
               className="w-full bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer group flex items-center justify-center relative"
@@ -124,7 +129,7 @@ export default function PhotoPost({
             >
               {!loaded[i] && <Spinner />}
               <Image
-                src={src}
+                src={img.src}
                 alt={`${altText} ${i + 1}`}
                 width={600}
                 height={400}
@@ -149,7 +154,7 @@ export default function PhotoPost({
             <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
               {!modalLoaded && <Spinner />}
               <Image
-                src={images[selectedIndex]}
+                src={images[selectedIndex].src}
                 alt={altText}
                 fill
                 className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}

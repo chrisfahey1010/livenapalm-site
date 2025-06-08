@@ -19,7 +19,14 @@ const s3Client = new S3Client({
   },
 });
 
-async function getImagesFromS3(folder: string, slug: string): Promise<string[]> {
+// Load EXIF data from JSON file
+const exifDataPath = path.join(process.cwd(), 'photo-exif.json');
+let exifData: Record<string, any> = {};
+if (fs.existsSync(exifDataPath)) {
+  exifData = JSON.parse(fs.readFileSync(exifDataPath, 'utf8'));
+}
+
+async function getImagesFromS3(folder: string, slug: string): Promise<{ src: string, exif: any }[]> {
   try {
     // Log the attempt to fetch images
     console.log(`Attempting to fetch images for ${folder}/${slug}_`);
@@ -54,7 +61,10 @@ async function getImagesFromS3(folder: string, slug: string): Promise<string[]> 
         const numB = parseInt(b.split('_').pop()?.split('.')[0] || '0');
         return numA - numB;
       })
-      .map((key: string) => `${bucketURL}/${key}`);
+      .map((key: string) => ({
+        src: `${bucketURL}/${key}`,
+        exif: exifData[key] || null
+      }));
 
     // Log the final image URLs
     console.log('Image URLs:', images);
