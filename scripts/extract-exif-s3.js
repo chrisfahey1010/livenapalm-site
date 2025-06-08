@@ -20,7 +20,8 @@ const EXIF_KEYS = [
   'FNumber',
   'ISO',
   'CreateDate',
-  'GPSPosition',
+  'GPSLatitude',
+  'GPSLongitude',
   'Flash',
   'ImageSize',
 ];
@@ -65,7 +66,13 @@ async function extractExifFromS3() {
       const filteredTags = {};
       for (const exifKey of EXIF_KEYS) {
         if (tags[exifKey] !== undefined) {
-          filteredTags[exifKey] = tags[exifKey];
+          const value = tags[exifKey];
+          // If the value is an object with a rawValue (i.e., CreateDate), use that
+          if (value && typeof value === 'object' && 'rawValue' in value) {
+            filteredTags[exifKey] = value.rawValue;
+          } else {
+            filteredTags[exifKey] = value;
+          }
         }
       }
       exifData[key] = filteredTags;
