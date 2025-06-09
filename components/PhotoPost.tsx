@@ -155,7 +155,7 @@ export default function PhotoPost({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center pb-40">
+            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
               <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-gray-300 z-20">
                 ({selectedIndex + 1} of {images.length})
               </div>
@@ -197,7 +197,7 @@ export default function PhotoPost({
               </button>
             </div>
             {/* Bottom Navbar for navigation, exif, and download */}
-            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-4 py-3 z-50 gap-2">
+            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-4 z-50 gap-2">
               {/* Left Arrow */}
               {selectedIndex > 0 ? (
                 <button
