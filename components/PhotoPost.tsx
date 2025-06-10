@@ -49,6 +49,7 @@ export default function PhotoPost({
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
+  const [downloadingAlbum, setDownloadingAlbum] = useState(false);
 
   // Detect iOS (iPhone/iPad/iPod)
   const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -121,6 +122,42 @@ export default function PhotoPost({
     }
   }, [selectedIndex, images]);
 
+  // Handle album download
+  const handleAlbumDownload = async () => {
+    if (!images.length) return;
+    
+    setDownloadingAlbum(true);
+    try {
+      // Get the album prefix from the first image URL
+      const firstImageUrl = images[0].src;
+      const prefix = firstImageUrl.split('.com/')[1].split('/').slice(0, -1).join('/');
+      
+      const response = await fetch(`/api/download-album?prefix=${encodeURIComponent(prefix)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to download album');
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${prefix.split('/').pop() || 'album'}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading album:', error);
+      alert('Failed to download album. Please try again.');
+    } finally {
+      setDownloadingAlbum(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
       <div className="max-w-7xl mx-auto">
@@ -152,6 +189,26 @@ export default function PhotoPost({
             </div>
           ))}
         </div>
+
+        {/* Download Album Button */}
+        {!isIOS && (
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={handleAlbumDownload}
+              disabled={downloadingAlbum}
+              className="inline-flex items-center px-6 py-3 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {downloadingAlbum ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+                  Downloading...
+                </>
+              ) : (
+                'Download Album'
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Fullscreen Modal */}
         {selectedIndex !== null && (

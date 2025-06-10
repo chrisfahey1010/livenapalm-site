@@ -8,11 +8,11 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 const bucketURL = 'https://livenapalm-photos.s3.us-west-2.amazonaws.com';
-const bucketName = 'livenapalm-photos';
+const bucketName = process.env.AWS_BUCKET_NAME || '';
 
 // Initialize S3 client
 const s3Client = new S3Client({
-  region: 'us-west-2',
+  region: process.env.AWS_REGION || '',
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
