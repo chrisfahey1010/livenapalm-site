@@ -20,10 +20,10 @@ const EXIF_KEYS = [
   'FNumber',
   'ISO',
   'CreateDate',
-  'GPSLatitude',
-  'GPSLongitude',
+  'GPSPosition',
   'Flash',
   'ImageSize',
+  'Rights',
 ];
 
 async function listAllJpgObjects() {
