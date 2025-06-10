@@ -18,11 +18,17 @@ type PhotoPostProps = {
   description: React.ReactNode;
 };
 
-// Simple spinner component
+// Image-based spinner component
 function Spinner() {
   return (
     <div className="absolute inset-0 flex items-center justify-center z-10">
-      <div className="w-10 h-10 border-4 border-gray-300 border-t-transparent rounded-full animate-spin" />
+      <Image
+        src="/spinner.png"
+        alt="Loading..."
+        width={40}
+        height={40}
+        className="animate-spin"
+      />
     </div>
   );
 }
