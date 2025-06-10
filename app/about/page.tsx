@@ -11,7 +11,7 @@ export default function AboutPage() {
           I have been photographing concerts since 2023, and editing the RAW photos using Darktable to create distinct and candid captures of energy in the moment. I shoot using a Canon R6 mark II and a Canon M50, paired with wide-aperture prime lenses.
         </p>
         <p className="mb-8 text-lg leading-relaxed">
-          This site is built from the ground up using modern web technology to showcase high-resolution photography. The site is built with Next.js 15 and React 19, leveraging TypeScript for type safety and TailwindCSS for responsive design. It features server-side rendering for optimal performance, dynamic image optimization, and a custom markdown-based content management system. The codebase follows modern best practices including component-based architecture, responsive design principles, and accessibility standards. I&apos;m building it in public to demonstrate my skills and continue growing as an engineer
+          This site is built from the ground up using modern web technology to showcase high-resolution photography. The site is built with Next.js 15 and React 19, leveraging TypeScript for type safety and TailwindCSS for responsive design. It features server-side rendering for optimal performance, dynamic image optimization, and a custom markdown-based content management system. The codebase follows modern best practices including component-based architecture, responsive design principles, and accessibility standards. I&apos;m building it in public to demonstrate my skills and continue growing as an engineer.
         </p>
         <img
           src="/me.jpg"
