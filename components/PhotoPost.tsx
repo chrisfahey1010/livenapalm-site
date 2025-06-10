@@ -50,7 +50,7 @@ export default function PhotoPost({
   const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
   const [downloadingAlbum, setDownloadingAlbum] = useState(false);
-  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [isSwiping, setIsSwiping] = useState(false);
 
   // Detect iOS (iPhone/iPad/iPod)
@@ -68,6 +68,8 @@ export default function PhotoPost({
   // Reset modal loaded state when opening a new image
   useEffect(() => {
     setModalLoaded(false);
+    setSwipeDirection(null);
+    setIsSwiping(false);
   }, [selectedIndex]);
 
   // Keyboard navigation for modal
@@ -90,58 +92,30 @@ export default function PhotoPost({
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     setIsSwiping(true);
-    setSwipeOffset(0);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    
     touchEndX.current = e.touches[0].clientX;
-    const delta = touchEndX.current - touchStartX.current;
-    
-    // Calculate swipe offset as a percentage of screen width
-    const screenWidth = window.innerWidth;
-    const offsetPercentage = (delta / screenWidth) * 100;
-    
-    // Limit the swipe offset to prevent excessive movement
-    const limitedOffset = Math.max(Math.min(offsetPercentage, 30), -30);
-    setSwipeOffset(limitedOffset);
+    if (touchStartX.current !== null && touchEndX.current !== null) {
+      const delta = touchEndX.current - touchStartX.current;
+      setSwipeDirection(delta > 0 ? 'right' : 'left');
+    }
   };
 
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null && selectedIndex !== null) {
       const delta = touchEndX.current - touchStartX.current;
-      const screenWidth = window.innerWidth;
-      const threshold = screenWidth * 0.2; // 20% of screen width threshold
-
-      if (delta > threshold && selectedIndex > 0) {
-        // Swipe right - go to previous
-        setSwipeOffset(100);
-        setTimeout(() => {
-          setSelectedIndex(selectedIndex - 1);
-          setSwipeOffset(0);
-        }, 300);
-      } else if (delta < -threshold && selectedIndex < images.length - 1) {
-        // Swipe left - go to next
-        setSwipeOffset(-100);
-        setTimeout(() => {
-          setSelectedIndex(selectedIndex + 1);
-          setSwipeOffset(0);
-        }, 300);
-      } else {
-        // Return to center
-        setSwipeOffset(0);
+      if (delta > 50 && selectedIndex > 0) {
+        setSelectedIndex(selectedIndex - 1);
+      } else if (delta < -50 && selectedIndex < images.length - 1) {
+        setSelectedIndex(selectedIndex + 1);
       }
     }
     touchStartX.current = null;
     touchEndX.current = null;
+    setSwipeDirection(null);
     setIsSwiping(false);
   };
-
-  // Reset swipe offset when changing images
-  useEffect(() => {
-    setSwipeOffset(0);
-  }, [selectedIndex]);
 
   // Fetch presigned download URL when modal is open and selectedIndex changes
   useEffect(() => {
@@ -258,9 +232,9 @@ export default function PhotoPost({
             onTouchEnd={handleTouchEnd}
           >
             <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-gray-300 z-20">
-                ({selectedIndex + 1} of {images.length})
+              ({selectedIndex + 1} of {images.length})
             </div>
-            <div className="relative w-full h-full max-w-8xl max-h-[90vh] flex items-center justify-center">
+            <div className="relative w-full h-full max-w-8xl max-h-[90vh] flex items-center justify-center overflow-hidden">
               {!modalLoaded && !showExif && <Spinner />}
               {showExif ? (
                 <div className="bg-black bg-opacity-80 text-white rounded-lg p-6 max-h-[70vh] w-full max-w-2xl overflow-y-auto shadow-lg border border-gray-700">
@@ -281,21 +255,62 @@ export default function PhotoPost({
                   )}
                 </div>
               ) : (
-                <div 
-                  className="relative w-full h-full"
-                  style={{
-                    transform: `translateX(${swipeOffset}%)`,
-                    transition: isSwiping ? 'none' : 'transform 0.3s ease-out'
-                  }}
-                >
-                  <Image
-                    src={images[selectedIndex].src}
-                    alt={altText}
-                    fill
-                    className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
-                    priority
-                    onLoad={() => setModalLoaded(true)}
-                  />
+                <div className="relative w-full h-full">
+                  {/* Previous Image */}
+                  {selectedIndex > 0 && (
+                    <div
+                      className={`absolute inset-0 transition-transform duration-300 ${
+                        swipeDirection === 'right' ? 'translate-x-0' : '-translate-x-full'
+                      }`}
+                    >
+                      <Image
+                        src={images[selectedIndex - 1].src}
+                        alt={altText}
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Current Image */}
+                  <div
+                    className={`absolute inset-0 transition-transform duration-300 ${
+                      isSwiping
+                        ? swipeDirection === 'left'
+                          ? '-translate-x-full'
+                          : swipeDirection === 'right'
+                          ? 'translate-x-full'
+                          : 'translate-x-0'
+                        : 'translate-x-0'
+                    }`}
+                  >
+                    <Image
+                      src={images[selectedIndex].src}
+                      alt={altText}
+                      fill
+                      className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
+                      priority
+                      onLoad={() => setModalLoaded(true)}
+                    />
+                  </div>
+
+                  {/* Next Image */}
+                  {selectedIndex < images.length - 1 && (
+                    <div
+                      className={`absolute inset-0 transition-transform duration-300 ${
+                        swipeDirection === 'left' ? 'translate-x-0' : 'translate-x-full'
+                      }`}
+                    >
+                      <Image
+                        src={images[selectedIndex + 1].src}
+                        alt={altText}
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    </div>
+                  )}
                 </div>
               )}
               <button
