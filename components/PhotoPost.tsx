@@ -123,7 +123,7 @@ export default function PhotoPost({
 
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-8xl mx-auto">
         <h1 className="text-xl font-bold mb-2">{title}</h1>
         <p className="text-gray-400 text-sm mb-4">
           📅 {date} · 📍 {location}
