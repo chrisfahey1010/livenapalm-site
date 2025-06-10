@@ -50,6 +50,8 @@ export default function PhotoPost({
   const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
   const [downloadingAlbum, setDownloadingAlbum] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   // Detect iOS (iPhone/iPad/iPod)
   const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -87,22 +89,59 @@ export default function PhotoPost({
   // Touch/swipe navigation for modal
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    setIsSwiping(true);
+    setSwipeOffset(0);
   };
+
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    
     touchEndX.current = e.touches[0].clientX;
+    const delta = touchEndX.current - touchStartX.current;
+    
+    // Calculate swipe offset as a percentage of screen width
+    const screenWidth = window.innerWidth;
+    const offsetPercentage = (delta / screenWidth) * 100;
+    
+    // Limit the swipe offset to prevent excessive movement
+    const limitedOffset = Math.max(Math.min(offsetPercentage, 30), -30);
+    setSwipeOffset(limitedOffset);
   };
+
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null && selectedIndex !== null) {
       const delta = touchEndX.current - touchStartX.current;
-      if (delta > 50 && selectedIndex > 0) {
-        setSelectedIndex(selectedIndex - 1);
-      } else if (delta < -50 && selectedIndex < images.length - 1) {
-        setSelectedIndex(selectedIndex + 1);
+      const screenWidth = window.innerWidth;
+      const threshold = screenWidth * 0.2; // 20% of screen width threshold
+
+      if (delta > threshold && selectedIndex > 0) {
+        // Swipe right - go to previous
+        setSwipeOffset(100);
+        setTimeout(() => {
+          setSelectedIndex(selectedIndex - 1);
+          setSwipeOffset(0);
+        }, 300);
+      } else if (delta < -threshold && selectedIndex < images.length - 1) {
+        // Swipe left - go to next
+        setSwipeOffset(-100);
+        setTimeout(() => {
+          setSelectedIndex(selectedIndex + 1);
+          setSwipeOffset(0);
+        }, 300);
+      } else {
+        // Return to center
+        setSwipeOffset(0);
       }
     }
     touchStartX.current = null;
     touchEndX.current = null;
+    setIsSwiping(false);
   };
+
+  // Reset swipe offset when changing images
+  useEffect(() => {
+    setSwipeOffset(0);
+  }, [selectedIndex]);
 
   // Fetch presigned download URL when modal is open and selectedIndex changes
   useEffect(() => {
@@ -242,14 +281,22 @@ export default function PhotoPost({
                   )}
                 </div>
               ) : (
-                <Image
-                  src={images[selectedIndex].src}
-                  alt={altText}
-                  fill
-                  className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
-                  priority
-                  onLoad={() => setModalLoaded(true)}
-                />
+                <div 
+                  className="relative w-full h-full"
+                  style={{
+                    transform: `translateX(${swipeOffset}%)`,
+                    transition: isSwiping ? 'none' : 'transform 0.3s ease-out'
+                  }}
+                >
+                  <Image
+                    src={images[selectedIndex].src}
+                    alt={altText}
+                    fill
+                    className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
+                    priority
+                    onLoad={() => setModalLoaded(true)}
+                  />
+                </div>
               )}
               <button
                 className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
