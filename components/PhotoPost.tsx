@@ -161,10 +161,10 @@ export default function PhotoPost({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-gray-300 z-20">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-gray-300 z-20">
                 ({selectedIndex + 1} of {images.length})
-              </div>
+            </div>
+            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
               {!modalLoaded && !showExif && <Spinner />}
               {showExif ? (
                 <div className="bg-black bg-opacity-80 text-white rounded-lg p-6 max-h-[70vh] w-full max-w-2xl overflow-y-auto shadow-lg border border-gray-700">
