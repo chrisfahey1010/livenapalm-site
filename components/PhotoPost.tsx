@@ -221,7 +221,7 @@ export default function PhotoPost({
                 aria-label={showExif ? "View Photo" : "View EXIF"}
                 onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
               >
-                {showExif ? "🖼️ View Photo" : "📄 View EXIF"}
+                {showExif ? "View Photo" : "View EXIF"}
               </button>
               {/* Download Button */}
               {!isIOS && (
@@ -232,7 +232,7 @@ export default function PhotoPost({
                   aria-label="Download photo"
                   onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
                 >
-                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "⏬ Download"}
+                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "Download"}
                 </a>
               )}
               {/* Right Arrow */}
