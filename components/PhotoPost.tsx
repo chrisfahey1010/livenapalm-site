@@ -50,8 +50,9 @@ export default function PhotoPost({
   const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
   const [downloadingAlbum, setDownloadingAlbum] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const [isSwiping, setIsSwiping] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [nextImageIndex, setNextImageIndex] = useState<number | null>(null);
 
   // Detect iOS (iPhone/iPad/iPod)
   const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -68,53 +69,65 @@ export default function PhotoPost({
   // Reset modal loaded state when opening a new image
   useEffect(() => {
     setModalLoaded(false);
-    setSwipeDirection(null);
-    setIsSwiping(false);
+    setSlideDirection(null);
+    setNextImageIndex(null);
   }, [selectedIndex]);
+
+  // Handle navigation with animation
+  const handleNavigate = (newIndex: number) => {
+    if (selectedIndex === null || isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setNextImageIndex(newIndex);
+    // Set slide direction based on the direction of navigation
+    setSlideDirection(newIndex > selectedIndex ? 'left' : 'right');
+    
+    // Wait for the animation to complete before updating the index
+    setTimeout(() => {
+      setSelectedIndex(newIndex);
+      setShowExif(false);
+      setIsTransitioning(false);
+      setNextImageIndex(null);
+    }, 300); // Match this with the CSS transition duration
+  };
 
   // Keyboard navigation for modal
   useEffect(() => {
     if (selectedIndex === null) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setSelectedIndex((idx) => (idx !== null && idx > 0 ? idx - 1 : idx));
-      } else if (e.key === "ArrowRight") {
-        setSelectedIndex((idx) => (idx !== null && idx < images.length - 1 ? idx + 1 : idx));
+      if (e.key === "ArrowLeft" && selectedIndex > 0) {
+        handleNavigate(selectedIndex - 1);
+      } else if (e.key === "ArrowRight" && selectedIndex < images.length - 1) {
+        handleNavigate(selectedIndex + 1);
       } else if (e.key === "Escape") {
         setSelectedIndex(null);
+        setShowExif(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedIndex, images.length]);
+  }, [selectedIndex, images.length, isTransitioning]);
 
   // Touch/swipe navigation for modal
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
-    setIsSwiping(true);
   };
-
+  
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
-    if (touchStartX.current !== null && touchEndX.current !== null) {
-      const delta = touchEndX.current - touchStartX.current;
-      setSwipeDirection(delta > 0 ? 'right' : 'left');
-    }
   };
-
+  
   const handleTouchEnd = () => {
-    if (touchStartX.current !== null && touchEndX.current !== null && selectedIndex !== null) {
+    if (touchStartX.current !== null && touchEndX.current !== null && selectedIndex !== null && !isTransitioning) {
       const delta = touchEndX.current - touchStartX.current;
       if (delta > 50 && selectedIndex > 0) {
-        setSelectedIndex(selectedIndex - 1);
+        handleNavigate(selectedIndex - 1);
       } else if (delta < -50 && selectedIndex < images.length - 1) {
-        setSelectedIndex(selectedIndex + 1);
+        handleNavigate(selectedIndex + 1);
       }
     }
     touchStartX.current = null;
     touchEndX.current = null;
-    setSwipeDirection(null);
-    setIsSwiping(false);
   };
 
   // Fetch presigned download URL when modal is open and selectedIndex changes
@@ -255,36 +268,13 @@ export default function PhotoPost({
                   )}
                 </div>
               ) : (
-                <div className="relative w-full h-full">
-                  {/* Previous Image */}
-                  {selectedIndex > 0 && (
-                    <div
-                      className={`absolute inset-0 transition-transform duration-300 ${
-                        swipeDirection === 'right' ? 'translate-x-0' : '-translate-x-full'
-                      }`}
-                    >
-                      <Image
-                        src={images[selectedIndex - 1].src}
-                        alt={altText}
-                        fill
-                        className="object-contain"
-                        priority
-                      />
-                    </div>
-                  )}
-                  
+                <>
                   {/* Current Image */}
-                  <div
-                    className={`absolute inset-0 transition-transform duration-300 ${
-                      isSwiping
-                        ? swipeDirection === 'left'
-                          ? '-translate-x-full'
-                          : swipeDirection === 'right'
-                          ? 'translate-x-full'
-                          : 'translate-x-0'
-                        : 'translate-x-0'
-                    }`}
-                  >
+                  <div className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+                    slideDirection === 'left' ? 'translate-x-[-100%]' :
+                    slideDirection === 'right' ? 'translate-x-[100%]' :
+                    'translate-x-0'
+                  }`}>
                     <Image
                       src={images[selectedIndex].src}
                       alt={altText}
@@ -294,16 +284,15 @@ export default function PhotoPost({
                       onLoad={() => setModalLoaded(true)}
                     />
                   </div>
-
-                  {/* Next Image */}
-                  {selectedIndex < images.length - 1 && (
-                    <div
-                      className={`absolute inset-0 transition-transform duration-300 ${
-                        swipeDirection === 'left' ? 'translate-x-0' : 'translate-x-full'
-                      }`}
-                    >
+                  {/* Next Image (if transitioning) */}
+                  {nextImageIndex !== null && (
+                    <div className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+                      slideDirection === 'left' ? 'translate-x-[100%]' :
+                      slideDirection === 'right' ? 'translate-x-[-100%]' :
+                      'translate-x-0'
+                    }`}>
                       <Image
-                        src={images[selectedIndex + 1].src}
+                        src={images[nextImageIndex].src}
                         alt={altText}
                         fill
                         className="object-contain"
@@ -311,7 +300,7 @@ export default function PhotoPost({
                       />
                     </div>
                   )}
-                </div>
+                </>
               )}
               <button
                 className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
@@ -328,17 +317,19 @@ export default function PhotoPost({
                 <button
                   className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
-                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); setShowExif(false); }}
+                  onClick={e => { e.stopPropagation(); handleNavigate(selectedIndex - 1); }}
                   aria-label="Previous photo"
+                  disabled={isTransitioning}
                 >
                   ⬅️
                 </button>
-              ) : <div className="w-16" />} {/* Spacer for alignment */}
+              ) : <div className="w-16" />}
               {/* View EXIF Button */}
               <button
                 className="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition mx-2"
                 aria-label={showExif ? "View Photo" : "View EXIF"}
                 onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
+                disabled={isTransitioning}
               >
                 {showExif ? "View Photo" : "View EXIF"}
               </button>
@@ -359,12 +350,13 @@ export default function PhotoPost({
                 <button
                   className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
-                  onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); setShowExif(false); }}
+                  onClick={e => { e.stopPropagation(); handleNavigate(selectedIndex + 1); }}
                   aria-label="Next photo"
+                  disabled={isTransitioning}
                 >
                   ➡️
                 </button>
-              ) : <div className="w-16" />} {/* Spacer for alignment */}
+              ) : <div className="w-16" />}
             </div>
           </div>
         )}
