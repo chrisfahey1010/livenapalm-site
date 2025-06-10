@@ -123,7 +123,7 @@ export default function PhotoPost({
 
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
-      <div className="max-w-8xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h1 className="text-xl font-bold mb-2">{title}</h1>
         <p className="text-gray-400 text-sm mb-4">
           📅 {date} · 📍 {location}
@@ -164,7 +164,7 @@ export default function PhotoPost({
             <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-gray-300 z-20">
                 ({selectedIndex + 1} of {images.length})
             </div>
-            <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
+            <div className="relative w-full h-full max-w-8xl max-h-[90vh] flex items-center justify-center">
               {!modalLoaded && !showExif && <Spinner />}
               {showExif ? (
                 <div className="bg-black bg-opacity-80 text-white rounded-lg p-6 max-h-[70vh] w-full max-w-2xl overflow-y-auto shadow-lg border border-gray-700">
