@@ -321,7 +321,7 @@ export default function PhotoPost({
               ) : <div className="w-16" />} {/* Spacer for alignment */}
               {/* View EXIF Button */}
               <button
-                className="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition mx-2"
+                className="inline-flex items-center justify-center w-36 px-4 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition mx-2 whitespace-nowrap"
                 aria-label={showExif ? "View Photo" : "View EXIF"}
                 onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
               >
