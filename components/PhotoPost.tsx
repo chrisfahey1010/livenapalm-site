@@ -307,21 +307,21 @@ export default function PhotoPost({
               </button>
             </div>
             {/* Bottom Navbar for navigation, exif, and download */}
-            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-2 z-50 gap-2">
+            <div className="fixed left-0 right-0 bottom-0 w-screen bg-black bg-opacity-80 flex items-center justify-between px-4 z-50 gap-2 max-w-[100vw]">
               {/* Left Arrow */}
               {selectedIndex > 0 ? (
                 <button
-                  className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  className="text-white rounded-full p-3 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
                   onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); setShowExif(false); }}
                   aria-label="Previous photo"
                 >
                   ⬅️
                 </button>
-              ) : <div className="w-16" />} {/* Spacer for alignment */}
+              ) : <div className="w-12" />} {/* Spacer for alignment */}
               {/* View EXIF Button */}
               <button
-                className="inline-flex items-center justify-center w-36 px-4 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition mx-2 whitespace-nowrap"
+                className="inline-flex items-center justify-center w-32 px-3 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition whitespace-nowrap"
                 aria-label={showExif ? "View Photo" : "View EXIF"}
                 onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
               >
@@ -331,7 +331,7 @@ export default function PhotoPost({
               <a
                 href={downloadUrl || undefined}
                 download
-                className={`inline-flex items-center justify-center w-32 px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                className={`inline-flex items-center justify-center w-28 px-3 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
                 aria-label="Download photo"
                 onClick={e => { 
                   if (!downloadUrl) {
@@ -349,14 +349,14 @@ export default function PhotoPost({
               {/* Right Arrow */}
               {selectedIndex < images.length - 1 ? (
                 <button
-                  className="text-white rounded-full p-4 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  className="text-white rounded-full p-3 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
                   onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); setShowExif(false); }}
                   aria-label="Next photo"
                 >
                   ➡️
                 </button>
-              ) : <div className="w-16" />} {/* Spacer for alignment */}
+              ) : <div className="w-12" />} {/* Spacer for alignment */}
             </div>
           </div>
         )}
