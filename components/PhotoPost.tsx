@@ -307,7 +307,7 @@ export default function PhotoPost({
               </button>
             </div>
             {/* Bottom Navbar for navigation, exif, and download */}
-            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-4 z-50 gap-2">
+            <div className="fixed left-0 right-0 bottom-0 w-full bg-black bg-opacity-80 flex items-center justify-between px-2 z-50 gap-2">
               {/* Left Arrow */}
               {selectedIndex > 0 ? (
                 <button
