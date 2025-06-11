@@ -332,11 +332,11 @@ export default function PhotoPost({
                 <a
                   href={downloadUrl || undefined}
                   download
-                  className={`inline-flex items-center px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                  className={`inline-flex items-center justify-center w-32 px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
                   aria-label="Download photo"
                   onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
                 >
-                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" /> : "Download"}
+                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : "Download"}
                 </a>
               )}
               {/* Right Arrow */}
