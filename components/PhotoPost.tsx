@@ -328,17 +328,24 @@ export default function PhotoPost({
                 {showExif ? "View Photo" : "View EXIF"}
               </button>
               {/* Download Button */}
-              {!isIOS && (
-                <a
-                  href={downloadUrl || undefined}
-                  download
-                  className={`inline-flex items-center justify-center w-32 px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
-                  aria-label="Download photo"
-                  onClick={e => { if (!downloadUrl) e.preventDefault(); e.stopPropagation(); }}
-                >
-                  {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : "Download"}
-                </a>
-              )}
+              <a
+                href={downloadUrl || undefined}
+                download
+                className={`inline-flex items-center justify-center w-32 px-4 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                aria-label="Download photo"
+                onClick={e => { 
+                  if (!downloadUrl) {
+                    e.preventDefault();
+                  } else if (isIOS) {
+                    e.preventDefault();
+                    alert("On iOS, the image will open in a new tab. You can save it by long-pressing the image.");
+                    window.open(downloadUrl, '_blank');
+                  }
+                  e.stopPropagation(); 
+                }}
+              >
+                {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : "Download"}
+              </a>
               {/* Right Arrow */}
               {selectedIndex < images.length - 1 ? (
                 <button
