@@ -9,6 +9,12 @@ type PhotoPostImage = {
   exif: ExifData | null;
 };
 
+// Helper function to create Google Maps URL from GPS coordinates
+const createGoogleMapsUrl = (gpsPosition: string): string => {
+  const [lat, lng] = gpsPosition.split(' ').map(Number);
+  return `https://www.google.com/maps?q=${lat},${lng}`;
+};
+
 type PhotoPostProps = {
   title: string;
   date: string;
@@ -271,7 +277,21 @@ export default function PhotoPost({
                         {Object.entries(images[selectedIndex].exif).map(([key, value]) => (
                           <tr key={key} className="border-b border-gray-700 last:border-b-0">
                             <td className="pr-4 py-1 text-gray-400 whitespace-nowrap align-top">{key}</td>
-                            <td className="py-1 break-all">{String(value)}</td>
+                            <td className="py-1 break-all">
+                              {key === 'GPSPosition' && typeof value === 'string' ? (
+                                <a
+                                  href={createGoogleMapsUrl(value)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 hover:text-blue-300 underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {value}
+                                </a>
+                              ) : (
+                                String(value)
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
