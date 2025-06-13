@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 className="h-8 w-auto object-contain hover:opacity-80 transition" 
               />
             </Link>
-            <div className="space-x-6">
+            <div className="space-x-6 flex items-center">
               <Link href="/gallery" className="text-white hover:text-gray-300">
                 Gallery
               </Link>
