@@ -18,6 +18,9 @@ export default function AboutPage() {
           alt="Chris Fahey in corpsepaint"
           className="mx-auto h-auto w-100 mb-6 rounded-sm shadow-lg" 
         />
+        <p className="mb-8 text-lg leading-relaxed">
+          Contact me at <a href="mailto:livenapalm666@gmail.com" className="underline">livenapalm666@gmail.com</a> for inquiries, booking, licensing, or prints.
+        </p>
       </div>
     </main>
   );
