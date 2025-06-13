@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 
 export const metadata = {
   title: 'LiveNapalm',
-  description: 'Concert photography and software project by Chris Fahey',
+  description: 'Concert photography by Chris Fahey',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
