@@ -218,7 +218,7 @@ export default function PhotoPost({
               key={i}
               className="w-full bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer group flex items-center justify-center relative"
               onClick={() => setSelectedIndex(i)}
-              style={{ minHeight: 200 }}
+              style={{ minHeight: 100 }}
             >
               {!loaded[i] && <Spinner />}
               <Image
@@ -226,7 +226,7 @@ export default function PhotoPost({
                 alt={`${altText} ${i + 1}`}
                 width={500}
                 height={500}
-                className={`object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
+                className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
                 style={{ aspectRatio: '1/1', display: 'block' }}
                 priority={i < 6}
                 onLoad={() => handleImageLoad(i)}
