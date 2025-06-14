@@ -46,9 +46,9 @@ A modern, responsive photography portfolio website built with Next.js, TypeScrip
 
 3. Create a `.env` file in the root directory with the following variables:
    ```
-   AWS_ACCESS_KEY_ID=your_access_key
-   AWS_SECRET_ACCESS_KEY=your_secret_key
-   AWS_REGION=your_region
+   ACCESS_KEY_ID=your_access_key
+   SECRET_ACCESS_KEY=your_secret_key
+   REGION=your_region
    S3_BUCKET_NAME=your_bucket_name
    ```
 

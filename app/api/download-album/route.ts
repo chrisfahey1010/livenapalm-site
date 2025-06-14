@@ -2,27 +2,27 @@ import { NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import JSZip from 'jszip';
 
-if (!process.env.AWS_REGION) {
-  throw new Error('AWS_REGION environment variable is not set');
+if (!process.env.REGION) {
+  throw new Error('REGION environment variable is not set');
 }
 
-if (!process.env.AWS_ACCESS_KEY_ID) {
-  throw new Error('AWS_ACCESS_KEY_ID environment variable is not set');
+if (!process.env.ACCESS_KEY_ID) {
+  throw new Error('ACCESS_KEY_ID environment variable is not set');
 }
 
-if (!process.env.AWS_SECRET_ACCESS_KEY) {
-  throw new Error('AWS_SECRET_ACCESS_KEY environment variable is not set');
+if (!process.env.SECRET_ACCESS_KEY) {
+  throw new Error('SECRET_ACCESS_KEY environment variable is not set');
 }
 
-if (!process.env.AWS_BUCKET_NAME) {
-  throw new Error('AWS_BUCKET_NAME environment variable is not set');
+if (!process.env.S3_BUCKET_NAME) {
+  throw new Error('S3_BUCKET_NAME environment variable is not set');
 }
 
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
+  region: process.env.REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
   },
 });
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 
     // List all objects in the album directory
     const listCommand = new ListObjectsV2Command({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.S3_BUCKET_NAME,
       Prefix: prefix,
     });
 
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
         if (!item.Key) return;
         
         const command = new GetObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.S3_BUCKET_NAME,
           Key: item.Key,
         });
         
