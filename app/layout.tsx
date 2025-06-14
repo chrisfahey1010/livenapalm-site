@@ -1,5 +1,6 @@
 import './globals.css';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ReactNode } from 'react';
 
 export const metadata = {
@@ -59,10 +60,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="bg-black border-b border-gray-800 p-4">
           <nav className="max-w-4xl mx-auto flex justify-between">
             <Link href="/" className="flex items-center">
-              <img
+              <Image
                 src="/logo_text.png"
                 alt="LiveNapalm"
-                className="h-8 w-auto object-contain [@media(hover:hover)]:hover:opacity-80 transition" 
+                width={68}
+                height={32}
+                className="object-contain [@media(hover:hover)]:hover:opacity-80 transition" 
               />
             </Link>
             <div className="space-x-6 flex items-center">

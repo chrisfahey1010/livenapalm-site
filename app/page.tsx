@@ -12,11 +12,16 @@ export default function HomePage() {
     <main className="min-h-screen bg-black text-white px-6 py-12">
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="sr-only">LiveNapalm - Concert Photography</h1>
-        <img
-          src="/logo.png"
-          alt="LiveNapalm Logo"
-          className="mx-auto h-24 w-auto mb-6" 
-        />
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="LiveNapalm Logo"
+            width={273}
+            height={96}
+            className="object-contain"
+            priority
+          />
+        </div>
         <p className="text-xl text-gray-300 mb-8">
           Gonzo concert photography in the Pacific Northwest by Chris Fahey
         </p>
