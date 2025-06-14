@@ -67,9 +67,6 @@ async function getImagesFromS3(folder: string, slug: string): Promise<{ src: str
         exif: exifData[key] || null
       }));
 
-    // Log the final image URLs
-    console.log('Image URLs:', images);
-
     return images;
   } catch (error) {
     console.error('Error fetching images from S3:', error);
