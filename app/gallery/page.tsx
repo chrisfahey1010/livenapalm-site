@@ -19,6 +19,8 @@ export default async function GalleryPage() {
                     src={post.imageSrc}
                     alt={post.altText}
                     fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    quality={75}
                     loading="lazy"
                     className="object-cover [@media(hover:hover)]:group-hover:scale-110 transition-transform duration-300 ease-in-out"
                   />

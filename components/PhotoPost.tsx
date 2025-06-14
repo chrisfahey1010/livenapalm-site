@@ -226,6 +226,8 @@ export default function PhotoPost({
                 alt={`${altText} ${i + 1}`}
                 width={500}
                 height={500}
+                sizes="(max-width: 768px) 50vw, 33vw"
+                quality={85}
                 className={`object-cover w-full h-full transition-transform duration-300 [@media(hover:hover)]:group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
                 style={{ aspectRatio: '1/1', display: 'block' }}
                 priority={i < 6}
@@ -312,6 +314,8 @@ export default function PhotoPost({
                     src={images[selectedIndex].src}
                     alt={altText}
                     fill
+                    sizes="100vw"
+                    quality={90}
                     className={`object-contain ${modalLoaded ? "opacity-100" : "opacity-0"}`}
                     priority
                     onLoad={() => setModalLoaded(true)}
