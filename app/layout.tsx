@@ -3,8 +3,53 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 
 export const metadata = {
-  title: 'LiveNapalm',
-  description: 'Concert photography by Chris Fahey',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  title: {
+    default: 'LiveNapalm',
+    template: '%s | LiveNapalm'
+  },
+  description: 'Gonzo concert photography in the Pacific Northwest by Chris Fahey.',
+  keywords: ['concert photography', 'live music', 'music photography', 'concert photos', 'live performance photography', 'gonzo photography', 'gonzo journalism'],
+  authors: [{ name: 'Chris Fahey' }],
+  creator: 'Chris Fahey',
+  publisher: 'LiveNapalm',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://livenapalm.com',
+    siteName: 'LiveNapalm',
+    title: 'LiveNapalm - Concert Photography',
+    description: 'Gonzo concert photography in the Pacific Northwest by Chris Fahey.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'LiveNapalm Concert Photography'
+      }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LiveNapalm - Concert Photography',
+    description: 'Professional concert photography by Chris Fahey',
+    images: ['/og-image.jpg'],
+    creator: '@livenapalm'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
