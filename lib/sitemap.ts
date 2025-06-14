@@ -5,7 +5,7 @@ import photoExif from '../photo-exif.json';
 interface PhotoExif {
   [key: string]: {
     CreateDate?: string;
-    [key: string]: any;
+    [key: string]: string | number | undefined;
   };
 }
 
