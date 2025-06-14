@@ -1,0 +1,21 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://livenapalm.com/sitemap.xml
+
+# Disallow API routes
+Disallow: /api/
+
+# Disallow Next.js internal routes
+Disallow: /_next/
+Disallow: /_build/
+Disallow: /_error/
+Disallow: /_document/
+Disallow: /_app/
+
+# Allow all other routes
+Allow: /gallery/
+Allow: /photos/
+Allow: /about/ 
