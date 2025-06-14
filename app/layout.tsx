@@ -62,14 +62,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <img
                 src="/logo_text.png"
                 alt="LiveNapalm"
-                className="h-8 w-auto object-contain hover:opacity-80 transition" 
+                className="h-8 w-auto object-contain [@media(hover:hover)]:hover:opacity-80 transition" 
               />
             </Link>
             <div className="space-x-6 flex items-center">
-              <Link href="/gallery" className="text-white hover:text-gray-300">
+              <Link href="/gallery" className="text-white [@media(hover:hover)]:hover:text-gray-300">
                 Gallery
               </Link>
-              <Link href="/about" className="text-white hover:text-gray-300">
+              <Link href="/about" className="text-white [@media(hover:hover)]:hover:text-gray-300">
                 About
               </Link>
             </div>

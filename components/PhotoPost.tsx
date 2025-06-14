@@ -226,7 +226,7 @@ export default function PhotoPost({
                 alt={`${altText} ${i + 1}`}
                 width={500}
                 height={500}
-                className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
+                className={`object-cover w-full h-full transition-transform duration-300 [@media(hover:hover)]:group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
                 style={{ aspectRatio: '1/1', display: 'block' }}
                 priority={i < 6}
                 onLoad={() => handleImageLoad(i)}
@@ -241,7 +241,7 @@ export default function PhotoPost({
             <button
               onClick={handleAlbumDownload}
               disabled={downloadingAlbum}
-              className="inline-flex items-center px-6 py-3 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 bg-white text-black rounded-lg shadow [@media(hover:hover)]:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {downloadingAlbum ? (
                 <>
@@ -283,7 +283,7 @@ export default function PhotoPost({
                                   href={createGoogleMapsUrl(value)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-400 hover:text-blue-300 underline"
+                                  className="text-blue-400 [@media(hover:hover)]:hover:text-blue-300 underline"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {value}
@@ -319,7 +319,7 @@ export default function PhotoPost({
                 </div>
               )}
               <button
-                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
+                className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 [@media(hover:hover)]:hover:bg-opacity-75 transition-opacity"
                 onClick={e => { e.stopPropagation(); setSelectedIndex(null); setShowExif(false); }}
                 aria-label="Close modal"
               >
@@ -331,7 +331,7 @@ export default function PhotoPost({
               {/* Left Arrow */}
               {selectedIndex > 0 ? (
                 <button
-                  className="text-white rounded-full p-3 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  className="text-white rounded-full p-3 flex items-center justify-center [@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
                   onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); setShowExif(false); }}
                   aria-label="Previous photo"
@@ -341,7 +341,7 @@ export default function PhotoPost({
               ) : <div className="w-12" />} {/* Spacer for alignment */}
               {/* View EXIF Button */}
               <button
-                className="inline-flex items-center justify-center w-32 px-3 py-2 bg-gray-800 text-white rounded shadow hover:bg-gray-700 transition whitespace-nowrap"
+                className="inline-flex items-center justify-center w-32 px-3 py-2 bg-gray-800 text-white rounded shadow [@media(hover:hover)]:hover:bg-gray-700 transition whitespace-nowrap"
                 aria-label={showExif ? "View Photo" : "View EXIF"}
                 onClick={e => { e.stopPropagation(); setShowExif(v => !v); }}
               >
@@ -351,7 +351,7 @@ export default function PhotoPost({
               <a
                 href={downloadUrl || undefined}
                 download
-                className={`inline-flex items-center justify-center w-28 px-3 py-2 bg-white text-black rounded shadow hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                className={`inline-flex items-center justify-center w-28 px-3 py-2 bg-white text-black rounded shadow [@media(hover:hover)]:hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
                 aria-label="Download photo"
                 onClick={e => { 
                   if (!downloadUrl) {
@@ -369,7 +369,7 @@ export default function PhotoPost({
               {/* Right Arrow */}
               {selectedIndex < images.length - 1 ? (
                 <button
-                  className="text-white rounded-full p-3 flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition"
+                  className="text-white rounded-full p-3 flex items-center justify-center [@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:bg-opacity-10 transition"
                   style={{ fontSize: 32 }}
                   onClick={e => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); setShowExif(false); }}
                   aria-label="Next photo"
