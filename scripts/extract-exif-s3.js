@@ -7,10 +7,22 @@ const os = require('os');
 const { S3Client, ListObjectsV2Command, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const bucketName = 'livenapalm-photos';
-const region = 'us-west-2';
+const region = process.env.REGION || 'us-west-2';
 const outputFile = path.join(__dirname, '../photo-exif.json');
 
-const s3 = new S3Client({ region });
+// Verify AWS credentials are available
+if (!process.env.ACCESS_KEY_ID || !process.env.SECRET_ACCESS_KEY) {
+  console.error('AWS credentials not found. Please ensure ACCESS_KEY_ID and SECRET_ACCESS_KEY are set.');
+  process.exit(1);
+}
+
+const s3 = new S3Client({ 
+  region,
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY
+  }
+});
 
 const EXIF_KEYS = [
   'Model',
