@@ -212,7 +212,7 @@ export default function PhotoPost({
         </p>
 
         {/* Photo Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
           {images.map((img, i) => (
             <div
               key={i}
@@ -224,10 +224,10 @@ export default function PhotoPost({
               <Image
                 src={img.src}
                 alt={`${altText} ${i + 1}`}
-                width={600}
-                height={400}
+                width={500}
+                height={500}
                 className={`object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
-                style={{ aspectRatio: '4/3', display: 'block' }}
+                style={{ aspectRatio: '1/1', display: 'block' }}
                 priority={i < 6}
                 onLoad={() => handleImageLoad(i)}
               />
