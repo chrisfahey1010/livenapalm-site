@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://livenapalm.com/sitemap.xml
+Sitemap: https://livenapalm.com/api/sitemap.xml
 
 # Disallow API routes
 Disallow: /api/
