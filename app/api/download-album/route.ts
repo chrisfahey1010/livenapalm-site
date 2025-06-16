@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import JSZip from 'jszip';
 
+// Debug logging for environment variables
+console.log('Environment variables check:');
+console.log('REGION:', process.env.REGION);
+console.log('ACCESS_KEY_ID exists:', !!process.env.ACCESS_KEY_ID);
+console.log('SECRET_ACCESS_KEY exists:', !!process.env.SECRET_ACCESS_KEY);
+console.log('S3_BUCKET_NAME:', process.env.S3_BUCKET_NAME);
+
 if (!process.env.REGION) {
   throw new Error('REGION environment variable is not set');
 }
