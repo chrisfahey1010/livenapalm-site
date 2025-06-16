@@ -2,27 +2,30 @@ import { NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import JSZip from 'jszip';
 
-if (!process.env.REGION) {
-  throw new Error('REGION environment variable is not set');
+// Verify environment variables
+const requiredEnvVars = {
+  REGION: process.env.REGION,
+  ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
+  SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
+  S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+};
+
+// Check for missing environment variables
+const missingEnvVars = Object.entries(requiredEnvVars)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars.join(', '));
+  throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
 }
 
-if (!process.env.ACCESS_KEY_ID) {
-  throw new Error('ACCESS_KEY_ID environment variable is not set');
-}
-
-if (!process.env.SECRET_ACCESS_KEY) {
-  throw new Error('SECRET_ACCESS_KEY environment variable is not set');
-}
-
-if (!process.env.S3_BUCKET_NAME) {
-  throw new Error('S3_BUCKET_NAME environment variable is not set');
-}
-
+// At this point, we know all environment variables are defined
 const s3Client = new S3Client({
-  region: process.env.REGION,
+  region: requiredEnvVars.REGION!,
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    accessKeyId: requiredEnvVars.ACCESS_KEY_ID!,
+    secretAccessKey: requiredEnvVars.SECRET_ACCESS_KEY!,
   },
 });
 
@@ -32,6 +35,7 @@ export async function GET(request: Request) {
     const prefix = searchParams.get('prefix');
 
     if (!prefix) {
+      console.error('Missing prefix parameter in download-album request');
       return NextResponse.json({ error: 'Prefix is required' }, { status: 400 });
     }
 
@@ -39,10 +43,11 @@ export async function GET(request: Request) {
 
     // List all objects in the album directory
     const listCommand = new ListObjectsV2Command({
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: requiredEnvVars.S3_BUCKET_NAME!,
       Prefix: prefix,
     });
 
+    console.log('Sending ListObjectsV2 command to S3');
     const { Contents } = await s3Client.send(listCommand);
     
     if (!Contents || Contents.length === 0) {
@@ -64,12 +69,14 @@ export async function GET(request: Request) {
     const zip = new JSZip();
     
     // Download and add each image to the ZIP
+    console.log('Starting to download images and add to ZIP');
     await Promise.all(
       imageFiles.map(async (item) => {
         if (!item.Key) return;
         
+        console.log('Downloading image:', item.Key);
         const command = new GetObjectCommand({
-          Bucket: process.env.S3_BUCKET_NAME,
+          Bucket: requiredEnvVars.S3_BUCKET_NAME!,
           Key: item.Key,
         });
         
@@ -77,6 +84,7 @@ export async function GET(request: Request) {
         const filename = item.Key.split('/').pop() || '';
         
         if (response.Body) {
+          console.log('Adding image to ZIP:', filename);
           const arrayBuffer = await response.Body.transformToByteArray();
           zip.file(filename, arrayBuffer);
         }
@@ -96,6 +104,11 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error('Error in download-album API:', error);
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return NextResponse.json({ error: 'Failed to generate download' }, { status: 500 });
   }
 } 
