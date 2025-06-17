@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
-import JSZip from 'jszip';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Debug logging for environment variables
 console.log('Environment variables check:');
@@ -67,56 +67,35 @@ export async function GET(request: Request) {
 
     console.log(`Found ${imageFiles.length} images to download`);
     
-    // Create a new ZIP file
-    const zip = new JSZip();
-    
-    // Download and add each image to the ZIP
-    await Promise.all(
+    // Generate presigned URLs for each image
+    const presignedUrls = await Promise.all(
       imageFiles.map(async (item) => {
-        if (!item.Key) return;
+        if (!item.Key) return null;
         
         const command = new GetObjectCommand({
           Bucket: process.env.S3_BUCKET_NAME,
           Key: item.Key,
         });
         
-        const response = await s3Client.send(command);
-        const filename = item.Key.split('/').pop() || '';
-        
-        if (response.Body) {
-          const arrayBuffer = await response.Body.transformToByteArray();
-          zip.file(filename, arrayBuffer);
-        }
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
+        return {
+          url,
+          filename: item.Key.split('/').pop() || '',
+        };
       })
     );
 
-    console.log('Generating ZIP file...');
-    // Generate the ZIP file
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    // Filter out any null values and return the presigned URLs
+    const validUrls = presignedUrls.filter((item): item is { url: string; filename: string } => item !== null);
     
-    console.log('ZIP file size:', zipBlob.size, 'bytes');
-    
-    try {
-      // Create a response with the ZIP file
-      const response = new NextResponse(zipBlob);
-      response.headers.set('Content-Type', 'application/zip');
-      response.headers.set('Content-Disposition', `attachment; filename="${prefix.split('/').pop() || 'album'}.zip"`);
-      response.headers.set('Content-Length', zipBlob.size.toString());
-      
-      console.log('Response headers set successfully');
-      console.log('ZIP file generated successfully');
-      return response;
-    } catch (error) {
-      console.error('Error creating response:', error);
-      return NextResponse.json({ 
-        error: 'Failed to create download response',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, { status: 500 });
-    }
+    return NextResponse.json({
+      files: validUrls,
+      albumName: prefix.split('/').pop() || 'album'
+    });
   } catch (error) {
     console.error('Error in download-album API:', error);
     return NextResponse.json({ 
-      error: 'Failed to generate download',
+      error: 'Failed to generate download URLs',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

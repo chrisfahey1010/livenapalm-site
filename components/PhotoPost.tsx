@@ -185,29 +185,38 @@ export default function PhotoPost({
         throw new Error(errorData.details || errorData.error || 'Failed to download album');
       }
 
-      // Check if the response is a blob
-      const contentType = response.headers.get('content-type');
-      if (contentType !== 'application/zip') {
-        const errorData = await response.json();
-        throw new Error(errorData.details || errorData.error || 'Invalid response format');
-      }
-
-      // Get the blob from the response
-      const blob = await response.blob();
+      const data = await response.json();
       
-      if (blob.size === 0) {
-        throw new Error('Downloaded file is empty');
+      if (!data.files || !Array.isArray(data.files) || data.files.length === 0) {
+        throw new Error('No files available for download');
       }
 
-      // Create a download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${prefix.split('/').pop() || 'album'}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Create a folder for the album
+      const albumName = data.albumName;
+      
+      // Download each file
+      for (const file of data.files) {
+        try {
+          const fileResponse = await fetch(file.url);
+          if (!fileResponse.ok) throw new Error(`Failed to download ${file.filename}`);
+          
+          const blob = await fileResponse.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          
+          // Add a small delay between downloads to prevent browser issues
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+          console.error(`Error downloading ${file.filename}:`, error);
+          // Continue with other files even if one fails
+        }
+      }
     } catch (error) {
       console.error('Error downloading album:', error);
       alert(error instanceof Error ? error.message : 'Failed to download album. Please try again.');
