@@ -177,15 +177,28 @@ export default function PhotoPost({
       const firstImageUrl = images[0].src;
       const prefix = firstImageUrl.split('.com/')[1].split('/').slice(0, -1).join('/');
       
+      console.log('Requesting album download for prefix:', prefix);
       const response = await fetch(`/api/download-album?prefix=${encodeURIComponent(prefix)}`);
       
       if (!response.ok) {
-        throw new Error('Failed to download album');
+        const errorData = await response.json();
+        throw new Error(errorData.details || errorData.error || 'Failed to download album');
+      }
+
+      // Check if the response is a blob
+      const contentType = response.headers.get('content-type');
+      if (contentType !== 'application/zip') {
+        const errorData = await response.json();
+        throw new Error(errorData.details || errorData.error || 'Invalid response format');
       }
 
       // Get the blob from the response
       const blob = await response.blob();
       
+      if (blob.size === 0) {
+        throw new Error('Downloaded file is empty');
+      }
+
       // Create a download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -197,7 +210,7 @@ export default function PhotoPost({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading album:', error);
-      alert('Failed to download album. Please try again.');
+      alert(error instanceof Error ? error.message : 'Failed to download album. Please try again.');
     } finally {
       setDownloadingAlbum(false);
     }

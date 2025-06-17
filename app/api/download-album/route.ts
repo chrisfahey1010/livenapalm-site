@@ -94,15 +94,30 @@ export async function GET(request: Request) {
     // Generate the ZIP file
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     
-    // Create a response with the ZIP file
-    const response = new NextResponse(zipBlob);
-    response.headers.set('Content-Type', 'application/zip');
-    response.headers.set('Content-Disposition', `attachment; filename="${prefix.split('/').pop() || 'album'}.zip"`);
+    console.log('ZIP file size:', zipBlob.size, 'bytes');
     
-    console.log('ZIP file generated successfully');
-    return response;
+    try {
+      // Create a response with the ZIP file
+      const response = new NextResponse(zipBlob);
+      response.headers.set('Content-Type', 'application/zip');
+      response.headers.set('Content-Disposition', `attachment; filename="${prefix.split('/').pop() || 'album'}.zip"`);
+      response.headers.set('Content-Length', zipBlob.size.toString());
+      
+      console.log('Response headers set successfully');
+      console.log('ZIP file generated successfully');
+      return response;
+    } catch (error) {
+      console.error('Error creating response:', error);
+      return NextResponse.json({ 
+        error: 'Failed to create download response',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
+    }
   } catch (error) {
     console.error('Error in download-album API:', error);
-    return NextResponse.json({ error: 'Failed to generate download' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to generate download',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 } 
