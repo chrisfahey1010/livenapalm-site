@@ -191,9 +191,6 @@ export default function PhotoPost({
         throw new Error('No files available for download');
       }
 
-      // Create a folder for the album
-      const albumName = data.albumName;
-      
       // Download each file
       for (const file of data.files) {
         try {
