@@ -7,6 +7,12 @@ applications:
             - npm ci
         build:
           commands:
+            - env | grep -e REGION >> .env.production
+            - env | grep -e ACCESS_KEY_ID >> .env.production
+            - env | grep -e SECRET_ACCESS_KEY >> .env.production
+            - env | grep -e S3_BUCKET_NAME >> .env.production
+            - env | grep -e NEXT_PUBLIC_SITE_URL >> .env.production
+            - env | grep -e NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION >> .env.production
             - npm run build
       artifacts:
         baseDirectory: .next
@@ -15,10 +21,4 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-      environment:
-        variables:
-          REGION: ${REGION}
-          ACCESS_KEY_ID: ${ACCESS_KEY_ID}
-          SECRET_ACCESS_KEY: ${SECRET_ACCESS_KEY}
-          S3_BUCKET_NAME: ${S3_BUCKET_NAME}
     appRoot: . 
