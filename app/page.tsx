@@ -14,7 +14,7 @@ export default function HomePage() {
         <h1 className="sr-only">LiveNapalm - Concert Photography</h1>
         <div className="flex justify-center mb-6">
           <Image
-            src="/logo.png"
+            src="/logo.jpg"
             alt="LiveNapalm Logo"
             width={273}
             height={96}
