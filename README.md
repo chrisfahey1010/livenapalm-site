@@ -1,6 +1,6 @@
 # LiveNapalm Photography Website
 
-A modern, responsive concert photography portfolio built with Next.js, TypeScript, and Tailwind CSS. The site is statically exported for Cloudflare Pages and currently uses Flickr as the temporary image origin.
+A modern, responsive concert photography portfolio built with Next.js, TypeScript, and Tailwind CSS. The site is statically exported for Cloudflare Workers Static Assets and currently uses Flickr as the temporary image origin.
 
 ## Features
 
@@ -10,7 +10,7 @@ A modern, responsive concert photography portfolio built with Next.js, TypeScrip
 - 💅 Styled with Tailwind CSS
 - 📝 Blog/Posts section with Markdown support
 - 🔍 EXIF display plumbing, with EXIF data deferred until originals are restored
-- ☁️ Static export for Cloudflare Pages
+- ☁️ Static export for Cloudflare Workers Static Assets
 
 ## Tech Stack
 
@@ -25,7 +25,7 @@ A modern, responsive concert photography portfolio built with Next.js, TypeScrip
 
 ### Prerequisites
 
-- Node.js 22 recommended for local parity with Cloudflare Pages
+- Node.js 22 recommended for local parity with Cloudflare Workers Builds
 - npm or yarn
 
 ### Installation
@@ -59,7 +59,7 @@ The site will be available at `http://localhost:3000`
    npm run build
    ```
 
-2. The static site is written to `out/` for Cloudflare Pages.
+2. The static site is written to `out/` for Cloudflare Workers Static Assets.
 
 3. Preview locally with any static file server:
    ```bash
@@ -78,14 +78,17 @@ npm run build:flickr-manifest
 
 The script matches public albums from `https://www.flickr.com/photos/livenapalm/albums` to posts by band/title and date. Posts without matching public albums remain visible in the gallery with a local fallback thumbnail until an album is available.
 
-## Cloudflare Pages
+## Cloudflare Workers
 
 Recommended settings:
 
 - Build command: `npm run build`
-- Build output directory: `out`
-- Root directory: repository root
+- Deploy command: `npx wrangler deploy` or `npm run deploy`
+- Non-production branch deploy command: `npx wrangler versions upload`
+- Root/path: repository root (`/`)
 - Environment variables: `NEXT_PUBLIC_SITE_URL=https://livenapalm.com`, plus `NODE_VERSION=22` if needed
+
+The Worker deployment is configured by `wrangler.toml`, which uploads the Next.js static export from `out/`.
 
 ## Project Structure
 
@@ -107,6 +110,7 @@ livenapalm-site/
 
 - `npm run dev` - Start development server with Turbopack
 - `npm run build` - Build the static export into `out/`
+- `npm run deploy` - Deploy the built static site to Cloudflare Workers
 - `npm run lint` - Run ESLint
 - `npm run build:flickr-manifest` - Refresh `data/photo-manifest.json` from public Flickr albums
 - `npm run extract-exif:s3` - Legacy AWS/S3 EXIF extraction script retained temporarily for reference

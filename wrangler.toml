@@ -1,0 +1,6 @@
+name = "livenapalm-site"
+compatibility_date = "2026-06-21"
+
+[assets]
+directory = "./out"
+html_handling = "auto-trailing-slash"
