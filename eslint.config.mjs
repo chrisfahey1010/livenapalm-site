@@ -10,6 +10,9 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [".next/**", "out/**", "scripts/extract-exif-s3.js"],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 

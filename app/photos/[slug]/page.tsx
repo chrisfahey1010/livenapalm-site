@@ -21,6 +21,7 @@ export default async function PhotoPage({
       location={metadata.location}
       images={metadata.images}
       altText={metadata.altText}
+      albumUrl={metadata.albumUrl}
       description={
         <div
           className="prose prose-invert max-w-none"

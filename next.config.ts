@@ -1,14 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   reactStrictMode: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "livenapalm-photos.s3.us-west-2.amazonaws.com",
-        port: "",        // leave blank
-        pathname: "/**", // allow any path under the bucket
+        hostname: "live.staticflickr.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },

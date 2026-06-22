@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "extract-exif": "node scripts/extract-exif-s3.js",
-    "build": "npm run extract-exif && next build",
+    "build:flickr-manifest": "node scripts/build-flickr-manifest.mjs",
+    "extract-exif:s3": "node scripts/extract-exif-s3.js",
+    "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.826.0",

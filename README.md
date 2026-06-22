@@ -1,25 +1,23 @@
 # LiveNapalm Photography Website
 
-A modern, responsive photography portfolio website built with Next.js, TypeScript, and Tailwind CSS. This website showcases photography work with a focus on performance and user experience.
+A modern, responsive concert photography portfolio built with Next.js, TypeScript, and Tailwind CSS. The site is statically exported for Cloudflare Pages and currently uses Flickr as the temporary image origin.
 
 ## Features
 
-- 🖼️ Responsive photo gallery with optimized images
+- 🖼️ Responsive photo gallery backed by a checked-in Flickr photo manifest
 - 📱 Mobile-first design
 - 🚀 Built with Next.js 15 and React 19
 - 💅 Styled with Tailwind CSS
 - 📝 Blog/Posts section with Markdown support
-- 🔍 EXIF data extraction and display
-- ☁️ AWS S3 integration for image storage
-- 🔒 Environment variable support for secure configuration
+- 🔍 EXIF display plumbing, with EXIF data deferred until originals are restored
+- ☁️ Static export for Cloudflare Pages
 
 ## Tech Stack
 
 - **Framework**: Next.js 15.3.3
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **Image Processing**: exiftool-vendored
-- **Cloud Storage**: AWS S3
+- **Image Origin**: Flickr manifest, with Cloudflare R2/Images planned for longer-term hosting
 - **Content Processing**: gray-matter, remark
 - **Development**: ESLint, Turbopack
 
@@ -27,9 +25,8 @@ A modern, responsive photography portfolio website built with Next.js, TypeScrip
 
 ### Prerequisites
 
-- Node.js (Latest LTS version recommended)
+- Node.js 22 recommended for local parity with Cloudflare Pages
 - npm or yarn
-- AWS S3 bucket (for image storage)
 
 ### Installation
 
@@ -44,13 +41,7 @@ A modern, responsive photography portfolio website built with Next.js, TypeScrip
    npm install
    ```
 
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   ACCESS_KEY_ID=your_access_key
-   SECRET_ACCESS_KEY=your_secret_key
-   REGION=your_region
-   S3_BUCKET_NAME=your_bucket_name
-   ```
+3. Optional: set `NEXT_PUBLIC_SITE_URL=https://livenapalm.com` for canonical metadata and sitemap URLs.
 
 ### Development
 
@@ -63,26 +54,49 @@ The site will be available at `http://localhost:3000`
 
 ### Building for Production
 
-1. Extract EXIF data and build the project:
+1. Build the static export:
    ```bash
    npm run build
    ```
 
-2. Start the production server:
+2. The static site is written to `out/` for Cloudflare Pages.
+
+3. Preview locally with any static file server:
    ```bash
-   npm start
+   npx serve out
    ```
+
+## Flickr Photo Manifest
+
+Gallery posts use the `images` frontmatter key in each `posts/*.md` file to look up Flickr image data in `data/photo-manifest.json`.
+
+To refresh the manifest from public Flickr albums:
+
+```bash
+npm run build:flickr-manifest
+```
+
+The script matches public albums from `https://www.flickr.com/photos/livenapalm/albums` to posts by band/title and date. Posts without matching public albums remain visible in the gallery with a local fallback thumbnail until an album is available.
+
+## Cloudflare Pages
+
+Recommended settings:
+
+- Build command: `npm run build`
+- Build output directory: `out`
+- Root directory: repository root
+- Environment variables: `NEXT_PUBLIC_SITE_URL=https://livenapalm.com`, plus `NODE_VERSION=22` if needed
 
 ## Project Structure
 
 ```
 livenapalm-site/
 ├── app/                # Next.js app directory
-│   ├── api/           # API routes
 │   ├── gallery/       # Photo gallery pages
 │   ├── photos/        # Individual photo pages
 │   └── about/         # About page
 ├── components/        # React components
+├── data/              # Checked-in Flickr photo manifest
 ├── lib/              # Utility functions and shared code
 ├── posts/            # Blog posts in Markdown
 ├── public/           # Static assets
@@ -92,10 +106,10 @@ livenapalm-site/
 ## Available Scripts
 
 - `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build the application for production
-- `npm start` - Start production server
+- `npm run build` - Build the static export into `out/`
 - `npm run lint` - Run ESLint
-- `npm run extract-exif` - Extract EXIF data from images
+- `npm run build:flickr-manifest` - Refresh `data/photo-manifest.json` from public Flickr albums
+- `npm run extract-exif:s3` - Legacy AWS/S3 EXIF extraction script retained temporarily for reference
 
 ## Contributing
 

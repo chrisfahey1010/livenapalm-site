@@ -6,6 +6,10 @@ import Image from "next/image";
 type ExifData = Record<string, string | number | boolean | null | undefined>;
 type PhotoPostImage = {
   src: string;
+  width: number;
+  height: number;
+  alt?: string;
+  downloadUrl?: string;
   exif: ExifData | null;
 };
 
@@ -21,6 +25,7 @@ type PhotoPostProps = {
   location: string;
   images: PhotoPostImage[];
   altText: string;
+  albumUrl?: string;
   description: React.ReactNode;
 };
 
@@ -45,6 +50,7 @@ export default function PhotoPost({
   location,
   images,
   altText,
+  albumUrl,
   description,
 }: PhotoPostProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -52,15 +58,14 @@ export default function PhotoPost({
   const [modalLoaded, setModalLoaded] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [downloading, setDownloading] = useState(false);
   const [showExif, setShowExif] = useState(false);
-  const [downloadingAlbum, setDownloadingAlbum] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
 
   // Detect iOS (iPhone/iPad/iPod)
   const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const selectedImage = selectedIndex === null ? null : images[selectedIndex];
+  const selectedPhotoUrl = selectedImage?.downloadUrl || selectedImage?.src;
 
   // Handle image load for grid
   const handleImageLoad = (idx: number) => {
@@ -149,79 +154,6 @@ export default function PhotoPost({
     setSwipeOffset(0);
   }, [selectedIndex]);
 
-  // Fetch presigned download URL when modal is open and selectedIndex changes
-  useEffect(() => {
-    if (selectedIndex !== null) {
-      setDownloadUrl(null);
-      setDownloading(true);
-      // Get the S3 key from the image URL
-      const url = images[selectedIndex].src;
-      const key = url.split(".com/")[1];
-      fetch(`/api/presigned-download?key=${encodeURIComponent(key)}`)
-        .then(res => res.json())
-        .then(data => {
-          setDownloadUrl(data.url);
-          setDownloading(false);
-        })
-        .catch(() => setDownloading(false));
-    }
-  }, [selectedIndex, images]);
-
-  // Handle album download
-  const handleAlbumDownload = async () => {
-    if (!images.length) return;
-    
-    setDownloadingAlbum(true);
-    try {
-      // Get the album prefix from the first image URL
-      const firstImageUrl = images[0].src;
-      const prefix = firstImageUrl.split('.com/')[1].split('/').slice(0, -1).join('/');
-      
-      console.log('Requesting album download for prefix:', prefix);
-      const response = await fetch(`/api/download-album?prefix=${encodeURIComponent(prefix)}`);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || errorData.error || 'Failed to download album');
-      }
-
-      const data = await response.json();
-      
-      if (!data.files || !Array.isArray(data.files) || data.files.length === 0) {
-        throw new Error('No files available for download');
-      }
-
-      // Download each file
-      for (const file of data.files) {
-        try {
-          const fileResponse = await fetch(file.url);
-          if (!fileResponse.ok) throw new Error(`Failed to download ${file.filename}`);
-          
-          const blob = await fileResponse.blob();
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = file.filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-          
-          // Add a small delay between downloads to prevent browser issues
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } catch (error) {
-          console.error(`Error downloading ${file.filename}:`, error);
-          // Continue with other files even if one fails
-        }
-      }
-    } catch (error) {
-      console.error('Error downloading album:', error);
-      alert(error instanceof Error ? error.message : 'Failed to download album. Please try again.');
-    } finally {
-      setDownloadingAlbum(false);
-    }
-  };
-
   return (
     <main className="min-h-screen bg-black text-white px-4 py-4">
       <div className="max-w-7xl mx-auto">
@@ -242,9 +174,9 @@ export default function PhotoPost({
               {!loaded[i] && <Spinner />}
               <Image
                 src={img.src}
-                alt={`${altText} ${i + 1}`}
-                width={500}
-                height={500}
+                alt={img.alt || `${altText} ${i + 1}`}
+                width={img.width || 500}
+                height={img.height || 500}
                 sizes="(max-width: 768px) 50vw, 33vw"
                 quality={85}
                 className={`object-cover w-full h-full transition-transform duration-300 [@media(hover:hover)]:group-hover:scale-105 ${loaded[i] ? "opacity-100" : "opacity-0"}`}
@@ -256,23 +188,17 @@ export default function PhotoPost({
           ))}
         </div>
 
-        {/* Download Album Button */}
-        {!isIOS && (
+        {/* Flickr Album Link */}
+        {albumUrl && (
           <div className="flex justify-center mb-8">
-            <button
-              onClick={handleAlbumDownload}
-              disabled={downloadingAlbum}
-              className="inline-flex items-center px-6 py-3 bg-white text-black rounded-lg shadow [@media(hover:hover)]:hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            <a
+              href={albumUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-white text-black rounded-lg shadow [@media(hover:hover)]:hover:bg-gray-200 transition"
             >
-              {downloadingAlbum ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
-                  Downloading...
-                </>
-              ) : (
-                'Download Album'
-              )}
-            </button>
+              Open Flickr Album
+            </a>
           </div>
         )}
 
@@ -331,7 +257,7 @@ export default function PhotoPost({
                 >
                   <Image
                     src={images[selectedIndex].src}
-                    alt={altText}
+                    alt={images[selectedIndex].alt || altText}
                     fill
                     sizes="100vw"
                     quality={90}
@@ -370,24 +296,21 @@ export default function PhotoPost({
               >
                 {showExif ? "View Photo" : "View EXIF"}
               </button>
-              {/* Download Button */}
+              {/* Flickr Photo Link */}
               <a
-                href={downloadUrl || undefined}
-                download
-                className={`inline-flex items-center justify-center w-28 px-3 py-2 bg-white text-black rounded shadow [@media(hover:hover)]:hover:bg-gray-200 transition ${!downloadUrl ? 'opacity-60 pointer-events-none' : ''}`}
-                aria-label="Download photo"
+                href={selectedPhotoUrl || undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center justify-center w-32 px-3 py-2 bg-white text-black rounded shadow [@media(hover:hover)]:hover:bg-gray-200 transition ${!selectedPhotoUrl ? 'opacity-60 pointer-events-none' : ''}`}
+                aria-label="View photo on Flickr"
                 onClick={e => { 
-                  if (!downloadUrl) {
+                  if (!selectedPhotoUrl) {
                     e.preventDefault();
-                  } else if (isIOS) {
-                    e.preventDefault();
-                    alert("On iOS, the image will open in a new tab. You can save it by long-pressing the image.");
-                    window.open(downloadUrl, '_blank');
                   }
                   e.stopPropagation(); 
                 }}
               >
-                {downloading ? <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : "Download"}
+                {isIOS ? "Open Photo" : "View Flickr"}
               </a>
               {/* Right Arrow */}
               {selectedIndex < images.length - 1 ? (
